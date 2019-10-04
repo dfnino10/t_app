@@ -2,7 +2,7 @@
 
 A new Flutter application to car pooling with buses
 
-## Porject goal
+## Project goal
 Develop a Flutter app that lets its users do "bus" pooling
 
 ## How to run 
