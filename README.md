@@ -7,9 +7,9 @@ Develop a Flutter app that lets its users do "bus" pooling
 
 ## How to run 
 
-## Requisites:
-Android SDK
-Flutter 
+### Requisites:
+- Android SDK
+- Flutter 
 
 ### Run locally
 Once the requisites are installed, open a console, go to project root folder and run ```flutter pub get```. This will install all dependencies in the  ```pubspec.yaml``` file. 
