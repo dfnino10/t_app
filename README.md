@@ -19,9 +19,6 @@ Once the requisites are installed, open a console, go to project root folder and
     [Github](https://github.com/dfnino10)
     [Personal](https://dfnino10.github.io/davidnino/)
     
-## Screenshot
-
-
 
 ## Description
 
@@ -29,8 +26,7 @@ For now the app lets you navigate thorugh cities using a google maps API.
 
 
 ## Demo 
-https://youtu.be/c_J3mnTBBX8
-[![Demo Video](https://raw.githubusercontent.com/dfnino10/navio_data_viewer/master/navigo-data-viewer.png)](https://youtu.be/c_J3mnTBBX8) 
+![https://raw.githubusercontent.com/dfnino10/t_app/master/MapWorking.gif](https://raw.githubusercontent.com/dfnino10/t_app/master/MapWorking.gif)
 
 ## Technologies
 - Flutter
