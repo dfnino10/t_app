@@ -1,0 +1,87 @@
+﻿{
+  "database": "t-app",
+  "collections": [
+    {
+      "passengers": [
+        {
+          "id": "long",
+          "name": "string",
+          "phone_number": "string",
+          "home_location": "location_id",
+          "fav_locations": [
+            "location_id"
+          ],
+          "future_trips": [
+            "trip_id"
+          ],
+          "future_rides": [
+            "ride_id"
+          ],
+          "past_rides": [
+            "ride_id"
+          ]
+        }
+      ]
+    },
+    {
+      "buses": [
+        {
+          "id": "long",
+          "license_plate": "string",
+          "capacity": "int",
+          "type": "string",
+          "description": "string",
+          "driver": {
+            "id": "long",
+            "name": "string",
+            "picture": "image",
+            "score": "double"
+          },
+          "future_rides": "rides_id",
+          "past_rides": "rides_id"
+        }
+      ]
+    },
+    {
+      "rides": [
+        {
+          "id": "long",
+          "start_time": "timestamp",
+          "end_time": "timestamp",
+          "destination": "location_id",
+          "driver": "driver_id",
+          "bus": "bus_id",
+          "stops": [
+            {
+              "stop_number": "int",
+              "location": "location_id"
+            }
+          ],
+          "passengers": [
+            "passenger_id"
+          ]
+        }
+      ]
+    },
+    {
+      "trips": [
+        {
+          "id": "long",
+          "origin": "location_id",
+          "destination": "location_id",
+          "arrival_time": "timestamp"
+        }
+      ]
+    },
+    {
+      "locations": [
+        {
+          "id": "long",
+          "name": "string",
+          "longitude": "double",
+          "latitue": "double"
+        }
+      ]
+    }
+  ]
+}
