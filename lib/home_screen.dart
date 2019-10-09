@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:t_app/schedule_route.dart';
 
 class MyHomeScreen extends StatefulWidget {
   @override
@@ -19,12 +20,12 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     });
   }
 
-  findPlace(){
-    Geolocator().placemarkFromAddress(placeToFind).then((result){
+  findPlace() {
+    Geolocator().placemarkFromAddress(placeToFind).then((result) {
       mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(result[0].position.latitude, result[0].position.longitude),
-        zoom: 10.0
-      )));
+          target:
+              LatLng(result[0].position.latitude, result[0].position.longitude),
+          zoom: 10.0)));
     });
   }
 
@@ -51,24 +52,39 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                   color: Colors.white),
               child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: findPlace,
-                    iconSize: 30.0,
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: findPlace,
+                      iconSize: 30.0,
+                    ),
                   ),
-                ),
-                onChanged: (val){
-                  setState(() {
-                    placeToFind = val;
-                  });
-                }
-              ),
+                  onChanged: (val) {
+                    setState(() {
+                      placeToFind = val;
+                    });
+                  }),
             ),
-          )
+          ),
+          Positioned(
+              bottom: 20,
+              right: 50,
+              left: 50,
+              child: FloatingActionButton.extended(
+                label: Text("Programar viajes"),
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext bc) {
+                        return ScheduleRoute();
+                      });
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => ScheduleRoute()));
+                },
+              ))
         ],
       ),
     );
