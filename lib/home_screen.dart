@@ -81,8 +81,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                       builder: (BuildContext bc) {
                         return ScheduleRoute();
                       });
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => ScheduleRoute()));
                 },
               ))
         ],
