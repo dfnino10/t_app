@@ -171,7 +171,7 @@ class _ModalBottomSheetLayout extends SingleChildLayoutDelegate {
       minWidth: constraints.maxWidth,
       maxWidth: constraints.maxWidth,
       minHeight: 0.0,
-      maxHeight: constraints.maxHeight - 200,
+      maxHeight: constraints.maxHeight - 143,
     );
   }
 
@@ -323,6 +323,20 @@ Future<T> showModalBottomSheetCustom<T>({
   assert(builder != null);
   assert(debugCheckHasMaterialLocalizations(context));
   return Navigator.push(context, _ModalBottomSheetRoute<T>(
+    builder: builder,
+    theme: Theme.of(context, shadowThemeOnly: true),
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+  ));
+}
+
+bool hideModalBottomSheetCustom<T>({
+  @required BuildContext context,
+  @required WidgetBuilder builder,
+}) {
+  assert(context != null);
+  assert(builder != null);
+  assert(debugCheckHasMaterialLocalizations(context));
+  return Navigator.pop(context, _ModalBottomSheetRoute<T>(
     builder: builder,
     theme: Theme.of(context, shadowThemeOnly: true),
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
