@@ -12,14 +12,19 @@ class ScheduleRoute extends StatefulWidget {
 }
 
 class _ScheduleRouteState extends State<ScheduleRoute> {
+  DateTime calendarStartDate = DateUtils.getFirstDayOfCurrentMonth();
+
+  DateTime calendarEndDate = DateUtils.getLastDayOfCurrentMonth();
+
   WidgetMarker displayedWidget = WidgetMarker.dateTimeSelector;
 
   List dates = List();
 
   var selectedTime;
 
-  month() {
-    var monthNumber = DateTime.now().month;
+  int currentMonth = DateTime.now().month - 1;
+
+  String getCurrentMonthName(int month) {
     var months = [
       "Enero",
       "Febrero",
@@ -35,10 +40,20 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
       "Diciembre"
     ];
     for (var i = 0; i < months.length; i++) {
-      if (i == (monthNumber - 1)) {
+      if (i == month) {
         return months[i];
       }
     }
+  }
+
+  DateTime removeMonths(DateTime fromMonth, int months) {
+    DateTime firstDayOfCurrentMonth = fromMonth;
+    for (int i = 0; i < months; i++) {
+      firstDayOfCurrentMonth =
+          DateUtils.getFirstDayOfMonth(firstDayOfCurrentMonth).subtract(Duration(days: 1));
+    }
+
+    return firstDayOfCurrentMonth;
   }
 
   Future<void> _selectTime(BuildContext context) async {
@@ -77,29 +92,56 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
             style:
                 TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
           )),
-      Row(children: <Widget>[
-        IconButton(
-            icon: Icon(Icons.arrow_back), iconSize: 12, autofocus: false),
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
         Container(
-            padding: EdgeInsets.symmetric(horizontal: 100),
-            child: Text(month())),
-        IconButton(
+            child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                iconSize: 12,
+                autofocus: false,
+                onPressed: () {
+                  setState(() {
+                    currentMonth = (currentMonth - 1) % 12;
+                    calendarEndDate = removeMonths(calendarEndDate, 1);
+                    calendarStartDate = DateUtils.getFirstDayOfMonth(calendarEndDate);
+                    print(calendarStartDate.toString() +
+                        calendarEndDate.toString());
+                  });
+                })),
+        Container(
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            child: Text(getCurrentMonthName(currentMonth) + " " + calendarStartDate.year.toString())),
+        Container(
+            child: IconButton(
           icon: Icon(Icons.arrow_forward),
           iconSize: 12,
           autofocus: false,
           onPressed: () {
-            setState(() {});
+            setState(() {
+              print(currentMonth);
+              currentMonth = (currentMonth + 1) % 12;
+              calendarStartDate = DateUtils.addMonths(calendarStartDate, 1);
+              calendarEndDate = DateUtils.addMonths(calendarEndDate, 2);
+              print(calendarStartDate.toString() + calendarEndDate.toString());
+            });
           },
-        )
+        ))
       ]),
       Calendarro(
         weekdayLabelsRow: CustomWeekdayLabelsView(),
-        startDate: DateUtils.getFirstDayOfCurrentMonth(),
-        endDate: DateUtils.getLastDayOfCurrentMonth(),
+        startDate: calendarStartDate,
+        endDate: calendarEndDate,
         displayMode: DisplayMode.MONTHS,
         selectionMode: SelectionMode.MULTI,
         onTap: (date) {
-          dates.add(date);
+          if (!dates.contains(date)) {
+            dates.add(date);
+          } else {
+            dates.remove(date);
+          }
+          print(dates);
         },
       ),
       Container(
@@ -117,7 +159,9 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
       Container(
           alignment: AlignmentDirectional.centerStart,
           child: FlatButton(
-              child: Text(selectedTime != null ? selectedTime.format(context) : TimeOfDay.now().format(context)),
+              child: Text(selectedTime != null
+                  ? selectedTime.format(context)
+                  : TimeOfDay.now().format(context)),
               onPressed: () {
                 _selectTime(context);
               }))
