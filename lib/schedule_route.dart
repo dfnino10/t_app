@@ -117,7 +117,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
       Container(
           alignment: AlignmentDirectional.centerStart,
           child: FlatButton(
-              child: Text(selectedTime.format(context)),
+              child: Text(selectedTime != null ? selectedTime.format(context) : TimeOfDay.now().format(context)),
               onPressed: () {
                 _selectTime(context);
               }))
