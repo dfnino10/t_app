@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:t_app/custom_bottom_sheet.dart';
+import 'package:t_app/drawer_route.dart';
 import 'package:t_app/schedule_route.dart';
 
 
@@ -46,6 +47,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer:  DrawerRoute(),
       body: Stack(
         children: <Widget>[
           GoogleMap(
