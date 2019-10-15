@@ -1,8 +1,8 @@
 import 'package:calendarro/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:calendarro/calendarro.dart';
-import 'package:t_app/calendarro/custemWeekdayLabelsView.dart';
-import 'package:t_app/custom_bottom_sheet.dart';
+import 'package:t_app/ui/custemWeekdayLabelsView.dart';
+import 'package:t_app/ui/custom_bottom_sheet.dart';
 
 enum WidgetMarker { dateTimeSelector, confirmTrip }
 

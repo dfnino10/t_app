@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:t_app/custom_bottom_sheet.dart';
-import 'package:t_app/drawer_route.dart';
-import 'package:t_app/schedule_route.dart';
+import 'package:t_app/ui/custom_bottom_sheet.dart';
+import 'package:t_app/ui/drawer_route.dart';
+import 'package:t_app/ui/schedule_route.dart';
 
 
 void main() => runApp(TApp());
@@ -13,7 +13,7 @@ class TApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(accentColor: Colors.blueAccent),
+      theme: ThemeData(accentColor: Color(0xff3497fd), primaryColorDark: Color(0xff2a2e43)),
       home: MyHomeScreen(),
     );
   }
