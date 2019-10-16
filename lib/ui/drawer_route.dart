@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:t_app/ui/trip_history_route.dart';
 import 'package:t_app/ui/user_profile_route.dart';
 
 class DrawerRoute extends StatefulWidget {
@@ -20,12 +21,12 @@ class _DrawerRouteState extends State<DrawerRoute> {
               child: Column(
                 children: <Widget>[
                   UserAccountsDrawerHeader(
-                    onDetailsPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UserProfileRoute()));
-                    },
+//                    onDetailsPressed: () {
+//                      Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                              builder: (context) => UserProfileRoute()));
+//                    },
                     margin: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                         color: Theme.of(context).primaryColorDark),
@@ -42,7 +43,7 @@ class _DrawerRouteState extends State<DrawerRoute> {
                     child: Row(
                       children: <Widget>[
                         Icon(
-                          Icons.face,
+                          Icons.face, //TODO replace with sad face
                           color: Colors.white,
                         ),
                         Text(
@@ -59,11 +60,16 @@ class _DrawerRouteState extends State<DrawerRoute> {
         ),
         ListTile(
           title: Text("Viajes futuros"),
-          onTap: () {},
+          onTap: () {
+            //TODO open future trips route here
+          },
         ),
         ListTile(
           title: Text("Historial de viajes"),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => TripHistoryRoute()));
+          },
         )
       ],
     ));
