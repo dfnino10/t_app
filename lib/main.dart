@@ -27,7 +27,7 @@ class MyHomeScreen extends StatefulWidget {
 class _MyHomeScreenState extends State<MyHomeScreen> {
   GoogleMapController mapController;
   String placeToFind;
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
+  static const LatLng _center = const LatLng(4.603112, -74.065193);
 
   void _onMapCreated(controller) {
     setState(() {
@@ -36,7 +36,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   }
 
   findPlace() {
-    Geolocator().placemarkFromAddress(placeToFind).then((result) {
+    Geolocator().placemarkFromAddress(           placeToFind).then((result) {
       mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
           target:
               LatLng(result[0].position.latitude, result[0].position.longitude),
