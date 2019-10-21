@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:t_app/ui/schedule_route.dart';
+import 'package:flutter/material.dart';
 
 class MyHomeScreen extends StatefulWidget {
   @override
@@ -12,6 +13,9 @@ class MyHomeScreen extends StatefulWidget {
 class _MyHomeScreenState extends State<MyHomeScreen> {
   GoogleMapController mapController;
   String placeToFind;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  MarkerId selectedMarker;
+  int _markerIdCounter =1;
   static const LatLng _center = const LatLng(45.521563, -122.677433);
 
   void _onMapCreated(controller) {
@@ -40,6 +44,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               target: _center,
               zoom: 11.0,
             ),
+            markers: Set<Marker>.of(markers.values),
           ),
           Positioned(
             top: 30,

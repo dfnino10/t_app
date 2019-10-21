@@ -26,6 +26,11 @@ dependencies:
   google_maps_flutter: ^0.5.21+7
   geolocator: ^5.1.3
   calendarro: ^1.1.2
+  flutter_google_places: 0.2.3
+  geocoder: 0.2.1
+  firebase_core: 0.4.0+9
+  cloud_firestore: 0.12.9+5
+
 
 dev_dependencies:
   flutter_test:
