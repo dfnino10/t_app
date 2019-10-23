@@ -81,7 +81,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
 
   getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (Connectivity().checkConnectivity() != ConnectivityResult.none) {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if(connectivityResult != ConnectivityResult.none) {
       Firestore.instance
           .collection('passengers')
           .document('6KAlH8I2hdWGKIVcSS1s')
