@@ -210,17 +210,18 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
 //      });
 //    } else if (displayedWidget == WidgetMarker.confirmTrip) {
 
-//  for(int i = 0; i < dates.length; i++) {
-//    CollectionReference docRef = Firestore.instance.collection('trips');
-//    docRef.add(<String, dynamic>{
-//      'date': dates[i],
-//      'arrival_time': selectedTime.format(context),
-//      'origin_lat': originLat,
-//      'origin_lon': originLon,
-//      'dest_lat': destLat,
-//      'dest_lon': destLon
-//    });
-//  }
+  for(int i = 0; i < dates.length; i++) {
+    CollectionReference docRef = Firestore.instance.collection('trips');
+    docRef.add(<String, dynamic>{
+      'date': dates[i],
+      'arrival_time': selectedTime.format(context),
+      'origin_lat': originLat,
+      'origin_lon': originLon,
+      'dest_lat': destLat,
+      'dest_lon': destLon
+    });
+  }
+
     hideModalBottomSheetCustom(
         context: context,
         builder: (BuildContext bc) {
@@ -267,27 +268,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                   child: Text("Aceptar"),
                   color: Theme.of(context).accentColor,
                   onPressed: () {
-//                    onPressNext();
-                    if(Connectivity().checkConnectivity() != ConnectivityResult.none){
-                    SnackBar snackBar = SnackBar(
-                      content: Text("Viajes programados"),
-                      action: SnackBarAction(
-                        label: "Aceptar",
-                        onPressed: () {},
-                      ),
-                    );
-                    Scaffold.of(context).showSnackBar(snackBar);
-                    }
-                    else {
-                      SnackBar snackBar = SnackBar(
-                        content: Text("No tienes conexión, tus viajes se programarán cuando la recuperes"),
-                        action: SnackBarAction(
-                          label: "Aceptar",
-                          onPressed: () {},
-                        ),
-                      );
-                      Scaffold.of(context).showSnackBar(snackBar);
-                    }
+                    onPressNext();
                   },
                 )
               ],
