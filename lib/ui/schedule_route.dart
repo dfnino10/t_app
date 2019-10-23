@@ -1,10 +1,15 @@
 import 'package:calendarro/date_utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:calendarro/calendarro.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:t_app/ui/custemWeekdayLabelsView.dart';
 import 'package:t_app/ui/custom_bottom_sheet.dart';
 
-enum WidgetMarker { dateTimeSelector, confirmTrip }
+enum WidgetMarker {
+  dateTimeSelector, /*confirmTrip*/
+}
 
 class ScheduleRoute extends StatefulWidget {
   @override
@@ -20,9 +25,30 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
 
   List dates = List();
 
-  var selectedTime;
+  TimeOfDay selectedTime = TimeOfDay.now();
 
   int currentMonth = DateTime.now().month - 1;
+
+  double originLat;
+
+  double originLon;
+
+  double destLat;
+
+  double destLon;
+
+  _ScheduleRouteState() {
+//    SharedPreferences.getInstance().then((SharedPreferences pref) {
+//      this.originLat = pref.getDouble('origin_lat');
+//      this.originLon = pref.getDouble('origin_lon');
+//      this.destLat = pref.getDouble('dest_lat');
+//      this.destLon = pref.getDouble('dest_lon');
+//    });
+    originLat = 4.1;
+    originLon = 23.4;
+    destLat = 2;
+    destLon = 5;
+  }
 
   String getCurrentMonthName(int month) {
     var months = [
@@ -50,7 +76,8 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
     DateTime firstDayOfCurrentMonth = fromMonth;
     for (int i = 0; i < months; i++) {
       firstDayOfCurrentMonth =
-          DateUtils.getFirstDayOfMonth(firstDayOfCurrentMonth).subtract(Duration(days: 1));
+          DateUtils.getFirstDayOfMonth(firstDayOfCurrentMonth)
+              .subtract(Duration(days: 1));
     }
 
     return firstDayOfCurrentMonth;
@@ -72,8 +99,8 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
     switch (displayedWidget) {
       case WidgetMarker.dateTimeSelector:
         return getDateTimeSelectorWidget();
-      case WidgetMarker.confirmTrip:
-        return getConfirmTripWidget();
+//      case WidgetMarker.confirmTrip:
+//        return getConfirmTripWidget();
     }
   }
 
@@ -93,42 +120,46 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                 TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
           )),
       Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-        Container(
-            child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                iconSize: 12,
-                autofocus: false,
-                onPressed: () {
-                  setState(() {
-                    currentMonth = (currentMonth - 1) % 12;
-                    calendarEndDate = removeMonths(calendarEndDate, 1);
-                    calendarStartDate = DateUtils.getFirstDayOfMonth(calendarEndDate);
-                    print(calendarStartDate.toString() +
-                        calendarEndDate.toString());
-                  });
-                })),
-        Container(
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            child: Text(getCurrentMonthName(currentMonth) + " " + calendarStartDate.year.toString())),
-        Container(
-            child: IconButton(
-          icon: Icon(Icons.arrow_forward),
-          iconSize: 12,
-          autofocus: false,
-          onPressed: () {
-            setState(() {
-              print(currentMonth);
-              currentMonth = (currentMonth + 1) % 12;
-              calendarStartDate = DateUtils.addMonths(calendarStartDate, 1);
-              calendarEndDate = DateUtils.addMonths(calendarEndDate, 2);
-              print(calendarStartDate.toString() + calendarEndDate.toString());
-            });
-          },
-        ))
-      ]),
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+                child: IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    iconSize: 12,
+                    autofocus: false,
+                    onPressed: () {
+                      setState(() {
+                        currentMonth = (currentMonth - 1) % 12;
+                        calendarEndDate = removeMonths(calendarEndDate, 1);
+                        calendarStartDate =
+                            DateUtils.getFirstDayOfMonth(calendarEndDate);
+                        print(calendarStartDate.toString() +
+                            calendarEndDate.toString());
+                      });
+                    })),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Text(getCurrentMonthName(currentMonth) +
+                    " " +
+                    calendarStartDate.year.toString())),
+            Container(
+                child: IconButton(
+              icon: Icon(Icons.arrow_forward),
+              iconSize: 12,
+              autofocus: false,
+              onPressed: () {
+                setState(() {
+                  print(currentMonth);
+                  currentMonth = (currentMonth + 1) % 12;
+                  calendarStartDate = DateUtils.addMonths(calendarStartDate, 1);
+                  calendarEndDate = DateUtils.addMonths(calendarEndDate, 2);
+                  print(calendarStartDate.toString() +
+                      calendarEndDate.toString());
+                });
+              },
+            ))
+          ]),
       Calendarro(
         weekdayLabelsRow: CustomWeekdayLabelsView(),
         startDate: calendarStartDate,
@@ -141,7 +172,6 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
           } else {
             dates.remove(date);
           }
-          print(dates);
         },
       ),
       Container(
@@ -168,33 +198,50 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
     ]);
   }
 
-  Widget getConfirmTripWidget() {
-    return Text("confirm trip");
-  }
+//  Widget getConfirmTripWidget() {
+//    return Text("confirm trip");
+//  }
 
   onPressNext() {
-    if (displayedWidget == WidgetMarker.dateTimeSelector) {
-      // showTimePicker(context: context, initialTime: TimeOfDay.now());
-      setState(() {
-        displayedWidget = WidgetMarker.confirmTrip;
-      });
-    } else if (displayedWidget == WidgetMarker.confirmTrip) {
-      //save trip here
-    }
+//    if (displayedWidget == WidgetMarker.dateTimeSelector) {
+//      // showTimePicker(context: context, initialTime: TimeOfDay.now());
+//      setState(() {
+//        displayedWidget = WidgetMarker.confirmTrip;
+//      });
+//    } else if (displayedWidget == WidgetMarker.confirmTrip) {
+
+//  for(int i = 0; i < dates.length; i++) {
+//    CollectionReference docRef = Firestore.instance.collection('trips');
+//    docRef.add(<String, dynamic>{
+//      'date': dates[i],
+//      'arrival_time': selectedTime.format(context),
+//      'origin_lat': originLat,
+//      'origin_lon': originLon,
+//      'dest_lat': destLat,
+//      'dest_lon': destLon
+//    });
+//  }
+    hideModalBottomSheetCustom(
+        context: context,
+        builder: (BuildContext bc) {
+          //emtpy on purpose
+        });
+
+//    }
   }
 
   onPressBack() {
-    if (displayedWidget == WidgetMarker.dateTimeSelector) {
-      hideModalBottomSheetCustom(
-          context: context,
-          builder: (BuildContext bc) {
-            //emtpy on purpose
-          });
-    } else if (displayedWidget == WidgetMarker.confirmTrip) {
-      setState(() {
-        displayedWidget = WidgetMarker.dateTimeSelector;
-      });
-    }
+//    if (displayedWidget == WidgetMarker.dateTimeSelector) {
+    hideModalBottomSheetCustom(
+        context: context,
+        builder: (BuildContext bc) {
+          //emtpy on purpose
+        });
+//    } else if (displayedWidget == WidgetMarker.confirmTrip) {
+//      setState(() {
+//        displayedWidget = WidgetMarker.dateTimeSelector;
+//      });
+//    }
   }
 
   @override
@@ -220,7 +267,27 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                   child: Text("Aceptar"),
                   color: Theme.of(context).accentColor,
                   onPressed: () {
-                    onPressNext();
+//                    onPressNext();
+                    if(Connectivity().checkConnectivity() != ConnectivityResult.none){
+                    SnackBar snackBar = SnackBar(
+                      content: Text("Viajes programados"),
+                      action: SnackBarAction(
+                        label: "Aceptar",
+                        onPressed: () {},
+                      ),
+                    );
+                    Scaffold.of(context).showSnackBar(snackBar);
+                    }
+                    else {
+                      SnackBar snackBar = SnackBar(
+                        content: Text("No tienes conexión, tus viajes se programarán cuando la recuperes"),
+                        action: SnackBarAction(
+                          label: "Aceptar",
+                          onPressed: () {},
+                        ),
+                      );
+                      Scaffold.of(context).showSnackBar(snackBar);
+                    }
                   },
                 )
               ],
