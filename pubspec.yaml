@@ -30,6 +30,8 @@ dependencies:
   geocoder: 0.2.1
   firebase_core: 0.4.0+9
   cloud_firestore: 0.12.9+5
+  shared_preferences: ^0.5.4
+  connectivity: 0.4.5+1
 
 
 dev_dependencies:
@@ -50,6 +52,7 @@ flutter:
 
   assets:
   - lib/assets/trip_icon.png
+  - lib/assets/frown.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

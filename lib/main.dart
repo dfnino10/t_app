@@ -1,15 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:t_app/ui/custom_bottom_sheet.dart';
 import 'package:t_app/ui/drawer_route.dart';
 import 'package:t_app/ui/schedule_route.dart';
+import 'package:connectivity/connectivity.dart';
 
-void main() => runApp(TApp());
+void main() => {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+          .then((_) {
+        runApp(TApp());
+      })
+    };
 
 class TApp extends StatelessWidget {
   @override
@@ -33,12 +42,41 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   int markerId = 1;
   String placeToFind;
   static const LatLng _center = const LatLng(4.603112, -74.065193);
+  String userName;
+  int sadFaces;
+  Image userPic;
+
+  _MyHomeScreenState() {
+    getUserInfo();
+  }
 
   void _onMapCreated(controller) {
     setState(() {
       mapController = controller;
-
     });
+  }
+
+  getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (Connectivity().checkConnectivity() != ConnectivityResult.none) {
+      Firestore.instance
+          .collection('passengers')
+          .document('6KAlH8I2hdWGKIVcSS1s')
+          .get()
+          .then((DocumentSnapshot ds) {
+        setState(() {
+          List data = ds.data.values.toList();
+          this.userName = data[0];
+          this.sadFaces = data[5];
+        });
+        prefs.setString('user_name', this.userName);
+        prefs.setInt('sad_faces', this.sadFaces);
+      });
+    }
+    else {
+      this.userName = prefs.getString('user_name');
+      this.sadFaces = prefs.getInt('sad_faces');
+    }
   }
 
   findPlace() {
@@ -61,6 +99,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   }
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+
 
   @override
   Widget build(BuildContext context) {
