@@ -52,7 +52,7 @@ class _ConnectivityCheckState extends State<ConnectivityCheck> {
 
     return string == "Offline"
         ? Positioned(
-            top: 100,
+            top: 135,
             right: 100,
             left: 150,
             child: Row(

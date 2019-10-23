@@ -43,10 +43,11 @@ class MyHomeScreen extends StatefulWidget {
 class _MyHomeScreenState extends State<MyHomeScreen> {
   GoogleMapController mapController;
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: apiK);
-  int markerId = 1;
-  String placeToFind;
+  String placeToFind1;
+  String placeToFind2;
   static const LatLng _center = const LatLng(4.603112, -74.065193);
   final _myController1 = TextEditingController();
+  final _myController2 = TextEditingController();
 
   String userName;
   int sadFaces;
@@ -79,6 +80,20 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     }
   }
 
+  findPlace2() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if(connectivityResult != ConnectivityResult.none) {
+      Prediction p = await PlacesAutocomplete.show(
+        context: context,
+        apiKey: apiK,
+        mode: Mode.overlay,
+      );
+      displayPrediction2(p);
+    }
+    else{
+
+    }
+  }
   getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -104,6 +119,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   }
 
   Future<Null> displayPrediction(Prediction p) async {
+    int markerId1 = 1;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (p != null) {
       PlacesDetailsResponse detail =
       await _places.getDetailsByPlaceId(p.placeId);
@@ -117,7 +134,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       mapController.animateCamera(CameraUpdate.newCameraPosition(
           CameraPosition(target: LatLng(lat, lng), zoom: 15.0)));
       Marker newMarker = Marker(
-        markerId: MarkerId(markerId.toString()),
+        markerId: MarkerId(markerId1.toString()),
         infoWindow: InfoWindow(
             title: "${detail.result.name}",
             snippet: "${detail.result.formattedAddress}"),
@@ -125,10 +142,45 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       );
       setState(() {
         markers[newMarker.markerId] = newMarker;
-        placeToFind = detail.result.name;
+        placeToFind1 = detail.result.name;
       });
-      _myController1.text = placeToFind;
-      markerId++;
+      prefs.setDouble('origin_lat', lat);
+      prefs.setDouble('origin_lon', lng);
+      prefs.setString('origin_name', detail.result.name);
+      _myController1.text = placeToFind1;
+    }
+  }
+
+  Future<Null> displayPrediction2(Prediction p) async {
+    int markerId2 = 2;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (p != null) {
+      PlacesDetailsResponse detail =
+      await _places.getDetailsByPlaceId(p.placeId);
+
+      var placeId = p.placeId;
+      double lat = detail.result.geometry.location.lat;
+      double lng = detail.result.geometry.location.lng;
+
+      var address = await Geocoder.local.findAddressesFromQuery(p.description);
+
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(lat, lng), zoom: 15.0)));
+      Marker newMarker = Marker(
+        markerId: MarkerId(markerId2.toString()),
+        infoWindow: InfoWindow(
+            title: "${detail.result.name}",
+            snippet: "${detail.result.formattedAddress}"),
+        position: LatLng(lat, lng),
+      );
+      setState(() {
+        markers[newMarker.markerId] = newMarker;
+        placeToFind2 = detail.result.name;
+      });
+      prefs.setDouble('dest_lat', lat);
+      prefs.setDouble('dest_lon', lng);
+      prefs.setString('dest_name', detail.result.name);
+      _myController2.text = placeToFind2;
     }
   }
 
@@ -174,7 +226,35 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                     onTap: findPlace,
                     onChanged: (val) {
                       setState(() {
-                        placeToFind=val;
+                        placeToFind1=val;
+                      });
+                    })),
+          ),
+          Positioned(
+            top: 80,
+            right: 15,
+            left: 15,
+            child: Container(
+                height: 50,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.white),
+                child: TextField(
+                    controller: _myController2,
+                    decoration: InputDecoration(
+                      hintText: '¿Punto de partida?',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.search),
+                        iconSize: 30.0,
+                      ),
+                    ),
+                    onTap: findPlace2,
+                    onChanged: (val) {
+                      setState(() {
+                        placeToFind2=val;
                       });
                     })),
           ),

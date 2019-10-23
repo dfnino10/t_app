@@ -37,17 +37,19 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
 
   double destLon;
 
+  String originName;
+
+  String destName;
+
   _ScheduleRouteState() {
-//    SharedPreferences.getInstance().then((SharedPreferences pref) {
-//      this.originLat = pref.getDouble('origin_lat');
-//      this.originLon = pref.getDouble('origin_lon');
-//      this.destLat = pref.getDouble('dest_lat');
-//      this.destLon = pref.getDouble('dest_lon');
-//    });
-    originLat = 4.1;
-    originLon = 23.4;
-    destLat = 2;
-    destLon = 5;
+    SharedPreferences.getInstance().then((SharedPreferences pref) {
+      this.originLat = pref.getDouble('origin_lat');
+      this.originLon = pref.getDouble('origin_lon');
+      this.destLat = pref.getDouble('dest_lat');
+      this.destLon = pref.getDouble('dest_lon');
+      this.originName = pref.getString('origin_name');
+      this.destName = pref.getString('dest_name');
+    });
   }
 
   String getCurrentMonthName(int month) {
@@ -218,7 +220,9 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
       'origin_lat': originLat,
       'origin_lon': originLon,
       'dest_lat': destLat,
-      'dest_lon': destLon
+      'dest_lon': destLon,
+      'origin_name': originName,
+      'dest_name': destName,
     });
   }
 
