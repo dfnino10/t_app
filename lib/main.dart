@@ -12,6 +12,7 @@ import 'package:t_app/ui/custom_bottom_sheet.dart';
 import 'package:t_app/ui/drawer_route.dart';
 import 'package:t_app/ui/schedule_route.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:t_app/ui/connectivity_check.dart';
 
 void main() => {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -19,6 +20,8 @@ void main() => {
         runApp(TApp());
       })
     };
+
+const apiK = 'AIzaSyDdDcFKetlYs88Ij8hlGIwNsuUDVvs1fsw';
 
 class TApp extends StatelessWidget {
   @override
@@ -39,9 +42,12 @@ class MyHomeScreen extends StatefulWidget {
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
   GoogleMapController mapController;
+  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: apiK);
   int markerId = 1;
   String placeToFind;
   static const LatLng _center = const LatLng(4.603112, -74.065193);
+  final _myController1 = TextEditingController();
+
   String userName;
   int sadFaces;
   Image userPic;
@@ -50,15 +56,33 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     getUserInfo();
   }
 
+
   void _onMapCreated(controller) {
     setState(() {
       mapController = controller;
     });
   }
 
+
+  findPlace() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if(connectivityResult != ConnectivityResult.none) {
+      Prediction p = await PlacesAutocomplete.show(
+        context: context,
+        apiKey: apiK,
+        mode: Mode.overlay,
+      );
+      displayPrediction(p);
+    }
+    else{
+
+    }
+  }
+
   getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (Connectivity().checkConnectivity() != ConnectivityResult.none) {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if(connectivityResult != ConnectivityResult.none) {
       Firestore.instance
           .collection('passengers')
           .document('6KAlH8I2hdWGKIVcSS1s')
@@ -79,23 +103,33 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     }
   }
 
-  findPlace() {
-    Geolocator().placemarkFromAddress(placeToFind).then((result) {
-      mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-          target:
-              LatLng(result[0].position.latitude, result[0].position.longitude),
-          zoom: 10.0)));
+  Future<Null> displayPrediction(Prediction p) async {
+    if (p != null) {
+      PlacesDetailsResponse detail =
+      await _places.getDetailsByPlaceId(p.placeId);
+
+      var placeId = p.placeId;
+      double lat = detail.result.geometry.location.lat;
+      double lng = detail.result.geometry.location.lng;
+
+      var address = await Geocoder.local.findAddressesFromQuery(p.description);
+
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(lat, lng), zoom: 15.0)));
       Marker newMarker = Marker(
         markerId: MarkerId(markerId.toString()),
-        infoWindow: InfoWindow(title: "${result[0].name}", snippet: "*"),
-        position:
-            LatLng(result[0].position.latitude, result[0].position.longitude),
+        infoWindow: InfoWindow(
+            title: "${detail.result.name}",
+            snippet: "${detail.result.formattedAddress}"),
+        position: LatLng(lat, lng),
       );
       setState(() {
         markers[newMarker.markerId] = newMarker;
+        placeToFind = detail.result.name;
       });
+      _myController1.text = placeToFind;
       markerId++;
-    });
+    }
   }
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -121,28 +155,28 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
             right: 15,
             left: 15,
             child: Container(
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white),
-              child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: findPlace,
-                      iconSize: 30.0,
+                height: 50,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.white),
+                child: TextField(
+                    controller: _myController1,
+                    decoration: InputDecoration(
+                      hintText: '¿A dónde quieres ir?',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.search),
+                        iconSize: 30.0,
+                      ),
                     ),
-                  ),
-                  onChanged: (val) {
-                    setState(() {
-                      placeToFind = val;
-                    });
-                  }),
-            ),
+                    onTap: findPlace,
+                    onChanged: (val) {
+                      setState(() {
+                        placeToFind=val;
+                      });
+                    })),
           ),
           Positioned(
               bottom: 20,
@@ -157,7 +191,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                         return ScheduleRoute();
                       });
                 },
-              ))
+              )),
+              ConnectivityCheck()
         ],
       ),
     );
