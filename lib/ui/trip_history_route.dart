@@ -8,6 +8,14 @@ class TripHistoryRoute extends StatefulWidget {
 }
 
 class _TripHistoryRouteState extends State<TripHistoryRoute> {
+  List trips = [
+    {'origin': 'Casa', 'destination': 'Uniandes', 'date': '10/10/19 - 7:20'},
+    {'origin': 'Uniandes', 'destination': 'Casa', 'date': '9/10/19 - 18:30'},
+    {'origin': 'Uniandes', 'destination': 'Casa', 'date': '7/10/19 - 18:45'},
+    {'origin': 'Uniandes', 'destination': 'Casa', 'date': '6/10/19 - 20:00'},
+    {'origin': 'Casa', 'destination': 'Uniandes', 'date': '3/10/19 - 7:42'}
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,53 +23,61 @@ class _TripHistoryRouteState extends State<TripHistoryRoute> {
         title: Text("Historial de viajes"),
         backgroundColor: Theme.of(context).primaryColorDark,
       ),
-      body: ListView(
+      body: ListView.builder(
+        itemCount: trips.length,
+        itemBuilder: (BuildContext context, int index) =>
+            buildList(context, index),
+      ),
+    );
+  }
+
+  Widget buildList(BuildContext context, int index) {
+    return (Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Card(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+          Container(
+            padding: EdgeInsets.only(top: 10),
+            child: Text(
+              trips[index]['date'],
+              style: TextStyle(fontSize: 10),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+            child: Row(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Text(
-                    "10/10/19 - 20:15",
-                    style: TextStyle(fontSize: 10),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                  child: Row(
+                    height: 50,
+                    padding: EdgeInsets.only(right: 10),
+                    child: Image.asset("lib/assets/trip_icon.png")),
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Container(height: 50, padding: EdgeInsets.only(right: 10),child: Image.asset("lib/assets/trip_icon.png")),
-                      Column(
+                      Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text("Origen", style: TextStyle(fontSize: 10)),
-                                  Text("asdfadsfkadsfsadfh", style: TextStyle(fontSize: 18))
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Destino", style: TextStyle(fontSize: 10)),
-                                Text("asdlkfksdjah", style: TextStyle(fontSize: 18))
-                              ],
-                            ),
-                          ]),
-                    ],
-                  ),
-                )
+                            Text("Origen", style: TextStyle(fontSize: 10)),
+                            Text(trips[index]['origin'],
+                                style: TextStyle(fontSize: 18))
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text("Destino", style: TextStyle(fontSize: 10)),
+                          Text(trips[index]['destination'], style: TextStyle(fontSize: 18))
+                        ],
+                      ),
+                    ]),
               ],
             ),
           )
         ],
       ),
-    );
+    ));
   }
 }

@@ -1,13 +1,32 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:t_app/ui/trip_history_route.dart';
 import 'package:t_app/ui/user_profile_route.dart';
 
 class DrawerRoute extends StatefulWidget {
+  DrawerRoute();
+
   @override
   _DrawerRouteState createState() => _DrawerRouteState();
 }
 
 class _DrawerRouteState extends State<DrawerRoute> {
+  String userName;
+
+  int sadFaces;
+
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((SharedPreferences pref) {
+      setState(() {
+        this.userName = pref.getString('user_name');
+        this.sadFaces = pref.getInt('sad_faces');
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -31,25 +50,25 @@ class _DrawerRouteState extends State<DrawerRoute> {
                     decoration: BoxDecoration(
                         color: Theme.of(context).primaryColorDark),
                     accountName: Text(
-                      "Juan Gómez",
+                      this.userName != null ? this.userName : "",
                       style: TextStyle(color: Colors.white),
                     ),
                     currentAccountPicture: CircleAvatar(
-                      child: Text("JG"),
+                      child: Text(this.userName != null ? this.userName.split(" ")[0]: ""), backgroundColor: Theme.of(context).accentColor,
                     ),
                   ),
                   Container(
                     padding: EdgeInsets.only(left: 16),
                     child: Row(
                       children: <Widget>[
-                        Icon(
-                          Icons.face, //TODO replace with sad face
-                          color: Colors.white,
+                        Container(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Text(
+                            this.sadFaces.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
-                        Text(
-                          "1",
-                          style: TextStyle(color: Colors.white),
-                        )
+                        Image.asset('lib/assets/frown.png', color: Colors.white)
                       ],
                     ),
                   )
