@@ -1,10 +1,12 @@
 import 'package:calendarro/date_utils.dart';
+import 'package:calendarro/default_day_tile_builder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:calendarro/calendarro.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:t_app/ui/custemWeekdayLabelsView.dart';
+import 'package:t_app/ui/customDayTileBuilder.dart';
 import 'package:t_app/ui/custom_bottom_sheet.dart';
 
 enum WidgetMarker {
@@ -134,10 +136,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                       setState(() {
                         currentMonth = (currentMonth - 1) % 12;
                         calendarEndDate = removeMonths(calendarEndDate, 1);
-                        calendarStartDate =
-                            DateUtils.getFirstDayOfMonth(calendarEndDate);
-                        print(calendarStartDate.toString() +
-                            calendarEndDate.toString());
+                        calendarStartDate = DateUtils.getFirstDayOfMonth(calendarEndDate);
                       });
                     })),
             Container(
@@ -152,22 +151,21 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
               autofocus: false,
               onPressed: () {
                 setState(() {
-                  print(currentMonth);
                   currentMonth = (currentMonth + 1) % 12;
                   calendarStartDate = DateUtils.addMonths(calendarStartDate, 1);
-                  calendarEndDate = DateUtils.addMonths(calendarEndDate, 2);
-                  print(calendarStartDate.toString() +
-                      calendarEndDate.toString());
+                  calendarEndDate = DateUtils.getLastDayOfMonth(calendarStartDate);
                 });
               },
             ))
           ]),
       Calendarro(
         weekdayLabelsRow: CustomWeekdayLabelsView(),
+        dayTileBuilder: CustomDayTileBuilder(),
         startDate: calendarStartDate,
         endDate: calendarEndDate,
         displayMode: DisplayMode.MONTHS,
         selectionMode: SelectionMode.MULTI,
+
         onTap: (date) {
           if (!dates.contains(date)) {
             dates.add(date);
