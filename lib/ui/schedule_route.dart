@@ -9,10 +9,6 @@ import 'package:t_app/ui/custemWeekdayLabelsView.dart';
 import 'package:t_app/ui/customDayTileBuilder.dart';
 import 'package:t_app/ui/custom_bottom_sheet.dart';
 
-enum WidgetMarker {
-  dateTimeSelector, /*confirmTrip*/
-}
-
 class ScheduleRoute extends StatefulWidget {
   @override
   _ScheduleRouteState createState() => _ScheduleRouteState();
@@ -23,9 +19,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
 
   DateTime calendarEndDate = DateUtils.getLastDayOfCurrentMonth();
 
-  WidgetMarker displayedWidget = WidgetMarker.dateTimeSelector;
-
-  List dates = List();
+  List selectedDates = [];
 
   TimeOfDay selectedTime = TimeOfDay.now();
 
@@ -99,131 +93,22 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
     }
   }
 
-  Widget getWidgetToDisplay() {
-    switch (displayedWidget) {
-      case WidgetMarker.dateTimeSelector:
-        return getDateTimeSelectorWidget();
-//      case WidgetMarker.confirmTrip:
-//        return getConfirmTripWidget();
+  onPressNext(BuildContext context) {
+    for (int i = 0; i < selectedDates.length; i++) {
+      CollectionReference docRef = Firestore.instance.collection('trips');
+      docRef.add(<String, dynamic>{
+        'date': selectedDates[i],
+        'arrival_time': selectedTime.format(context),
+        'origin_lat': originLat,
+        'origin_lon': originLon,
+        'dest_lat': destLat,
+        'dest_lon': destLon,
+        'origin_name': originName,
+        'dest_name': destName,
+      });
     }
-  }
 
-  Widget getDateTimeSelectorWidget() {
-    return Column(children: <Widget>[
-      Container(
-          alignment: AlignmentDirectional.centerStart,
-          padding: EdgeInsets.only(
-            top: 5,
-            bottom: 5,
-            left: 5,
-          ),
-          child: Text(
-            "Fechas de viaje",
-            textAlign: TextAlign.left,
-            style:
-                TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
-          )),
-      Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-                child: IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    iconSize: 12,
-                    autofocus: false,
-                    onPressed: () {
-                      setState(() {
-                        currentMonth = (currentMonth - 1) % 12;
-                        calendarEndDate = removeMonths(calendarEndDate, 1);
-                        calendarStartDate = DateUtils.getFirstDayOfMonth(calendarEndDate);
-                      });
-                    })),
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Text(getCurrentMonthName(currentMonth) +
-                    " " +
-                    calendarStartDate.year.toString())),
-            Container(
-                child: IconButton(
-              icon: Icon(Icons.arrow_forward),
-              iconSize: 12,
-              autofocus: false,
-              onPressed: () {
-                setState(() {
-                  currentMonth = (currentMonth + 1) % 12;
-                  calendarStartDate = DateUtils.addMonths(calendarStartDate, 1);
-                  calendarEndDate = DateUtils.getLastDayOfMonth(calendarStartDate);
-                });
-              },
-            ))
-          ]),
-      Calendarro(
-        weekdayLabelsRow: CustomWeekdayLabelsView(),
-        dayTileBuilder: CustomDayTileBuilder(),
-        startDate: calendarStartDate,
-        endDate: calendarEndDate,
-        displayMode: DisplayMode.MONTHS,
-        selectionMode: SelectionMode.MULTI,
-
-        onTap: (date) {
-          if (!dates.contains(date)) {
-            dates.add(date);
-          } else {
-            dates.remove(date);
-          }
-        },
-      ),
-      Container(
-          alignment: AlignmentDirectional.centerStart,
-          padding: EdgeInsets.only(
-            bottom: 5,
-            left: 5,
-          ),
-          child: Text(
-            "Hora de llegada:",
-            textAlign: TextAlign.left,
-            style:
-                TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
-          )),
-      Container(
-          alignment: AlignmentDirectional.centerStart,
-          child: FlatButton(
-              child: Text(selectedTime != null
-                  ? selectedTime.format(context)
-                  : TimeOfDay.now().format(context)),
-              onPressed: () {
-                _selectTime(context);
-              }))
-    ]);
-  }
-
-//  Widget getConfirmTripWidget() {
-//    return Text("confirm trip");
-//  }
-
-  onPressNext() {
-//    if (displayedWidget == WidgetMarker.dateTimeSelector) {
-//      // showTimePicker(context: context, initialTime: TimeOfDay.now());
-//      setState(() {
-//        displayedWidget = WidgetMarker.confirmTrip;
-//      });
-//    } else if (displayedWidget == WidgetMarker.confirmTrip) {
-
-  for(int i = 0; i < dates.length; i++) {
-    CollectionReference docRef = Firestore.instance.collection('trips');
-    docRef.add(<String, dynamic>{
-      'date': dates[i],
-      'arrival_time': selectedTime.format(context),
-      'origin_lat': originLat,
-      'origin_lon': originLon,
-      'dest_lat': destLat,
-      'dest_lon': destLon,
-      'origin_name': originName,
-      'dest_name': destName,
-    });
-  }
-
+    print(Calendarro.of(context).selectedDates);
     hideModalBottomSheetCustom(
         context: context,
         builder: (BuildContext bc) {
@@ -234,17 +119,11 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
   }
 
   onPressBack() {
-//    if (displayedWidget == WidgetMarker.dateTimeSelector) {
     hideModalBottomSheetCustom(
         context: context,
         builder: (BuildContext bc) {
           //emtpy on purpose
         });
-//    } else if (displayedWidget == WidgetMarker.confirmTrip) {
-//      setState(() {
-//        displayedWidget = WidgetMarker.dateTimeSelector;
-//      });
-//    }
   }
 
   @override
@@ -253,14 +132,105 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
         resizeToAvoidBottomInset: false,
         body: Column(
           children: <Widget>[
-            getWidgetToDisplay(),
+            Column(children: <Widget>[
+              Container(
+                  alignment: AlignmentDirectional.centerStart,
+                  padding: EdgeInsets.only(
+                    top: 5,
+                    bottom: 5,
+                    left: 5,
+                  ),
+                  child: Text(
+                    "Fechas de viaje",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor, fontSize: 16),
+                  )),
+              Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Container(
+                        child: IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            iconSize: 12,
+                            autofocus: false,
+                            onPressed: () {
+                              setState(() {
+                                currentMonth = (currentMonth - 1) % 12;
+                                calendarEndDate =
+                                    removeMonths(calendarEndDate, 1);
+                                calendarStartDate =
+                                    DateUtils.getFirstDayOfMonth(
+                                        calendarEndDate);
+                              });
+                            })),
+                    Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(getCurrentMonthName(currentMonth) +
+                            " " +
+                            calendarStartDate.year.toString())),
+                    Container(
+                        child: IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      iconSize: 12,
+                      autofocus: false,
+                      onPressed: () {
+                        setState(() {
+                          currentMonth = (currentMonth + 1) % 12;
+                          calendarStartDate =
+                              DateUtils.addMonths(calendarStartDate, 1);
+                          calendarEndDate =
+                              DateUtils.getLastDayOfMonth(calendarStartDate);
+                        });
+                      },
+                    ))
+                  ]),
+              Calendarro(
+                weekdayLabelsRow: CustomWeekdayLabelsView(),
+                dayTileBuilder: CustomDayTileBuilder(),
+                startDate: calendarStartDate,
+                endDate: calendarEndDate,
+                displayMode: DisplayMode.MONTHS,
+                selectionMode: SelectionMode.MULTI,
+                onTap: (date) {
+                  setState(() {
+                    if (date.isAfter(DateUtils.toMidnight(DateTime.now())) &&
+                        !selectedDates.contains(date)) {
+                      selectedDates.add(date);
+                    } else {
+                      selectedDates.remove(date);
+                    }
+                  });
+                },
+              ),
+              Container(
+                  alignment: AlignmentDirectional.centerStart,
+                  padding: EdgeInsets.only(
+                    bottom: 5,
+                    left: 5,
+                  ),
+                  child: Text(
+                    "Hora de llegada:",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor, fontSize: 16),
+                  )),
+              Container(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FlatButton(
+                      child: Text(selectedTime != null
+                          ? selectedTime.format(context)
+                          : TimeOfDay.now().format(context)),
+                      onPressed: () {
+                        _selectTime(context);
+                      }))
+            ]),
             ButtonBar(
               alignment: MainAxisAlignment.end,
               children: <Widget>[
                 RaisedButton(
-                  child: displayedWidget == WidgetMarker.dateTimeSelector
-                      ? Text("Cancelar")
-                      : Text("Atrás"),
+                  child: Text("Cancelar"),
                   onPressed: () {
                     onPressBack();
                   },
@@ -270,7 +240,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                   child: Text("Aceptar"),
                   color: Theme.of(context).accentColor,
                   onPressed: () {
-                    onPressNext();
+                    onPressNext(context);
                   },
                 )
               ],
