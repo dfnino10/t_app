@@ -101,7 +101,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
         return MainRoute();
       break;
       case AuthStatus.NOT_LOGGED_IN:
-        return new LoginRoute(
+        return new LoginSignupPage(
           auth: auth,
           loginCallback: loginCallback,
         );
