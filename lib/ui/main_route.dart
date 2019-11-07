@@ -18,6 +18,13 @@ import 'package:connectivity/connectivity.dart';
 import 'package:t_app/ui/connectivity_check.dart';
 
 class MainRoute extends StatefulWidget {
+
+  MainRoute({this.userId, this.auth, this.logoutCallback});
+
+  final String userId;
+  final BaseAuth auth;
+  final VoidCallback logoutCallback;
+
   @override
   _MainRouteState createState() => _MainRouteState();
 }

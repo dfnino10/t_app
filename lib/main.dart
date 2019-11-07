@@ -1,21 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:async';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoder/geocoder.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:t_app/service/authentication.dart';
-import 'package:t_app/ui/custom_bottom_sheet.dart';
-import 'package:t_app/ui/drawer_route.dart';
 import 'package:t_app/ui/login_route.dart';
 import 'package:t_app/ui/main_route.dart';
-import 'package:t_app/ui/schedule_route.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:t_app/ui/connectivity_check.dart';
+
+
+//codigo basado en https://github.com/tattwei46/flutter_login_demo/blob/master/lib/pages/root_page.dart
 
 void main() => {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -49,26 +39,24 @@ class MyHomeScreen extends StatefulWidget {
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
 
-  BaseAuth auth;
+  Auth auth = new Auth();
 
   String userId = "";
-  AuthStatus authStatus = AuthStatus.LOGGED_IN;
 
-  _MyHomeScreenState() {
-  }
+  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
 
   @override
   void initState() {
     super.initState();
-//    auth.getCurrentUser().then((user) {
-//      setState(() {
-//        if (user != null) {
-//          userId = user?.uid;
-//        }
-//        authStatus =
-//        user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
-//      });
-//    });
+    auth.getCurrentUser().then((user) {
+      setState(() {
+        if (user != null) {
+          userId = user?.uid;
+        }
+        authStatus =
+        user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
+      });
+    });
   }
 
   void loginCallback() {
@@ -79,6 +67,13 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     });
     setState(() {
       authStatus = AuthStatus.LOGGED_IN;
+    });
+  }
+
+  void logoutCallback() {
+    setState(() {
+      authStatus = AuthStatus.NOT_LOGGED_IN;
+      userId = "";
     });
   }
 
@@ -95,13 +90,25 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   Widget build(BuildContext context) {
     switch(authStatus){
       case AuthStatus.NOT_DETERMINED:
-        buildWaitingScreen();
+          return Scaffold(
+            body: Container(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            ),
+          );
         break;
       case AuthStatus.LOGGED_IN:
-        return MainRoute();
+        if (userId.length > 0 && userId != null) {
+          return new MainRoute(
+            userId: this.userId,
+            auth: auth,
+            logoutCallback: logoutCallback,
+          );
+        } else
+          return buildWaitingScreen();
       break;
       case AuthStatus.NOT_LOGGED_IN:
-        return new LoginRoute(
+        return new LoginSignupPage(
           auth: auth,
           loginCallback: loginCallback,
         );
