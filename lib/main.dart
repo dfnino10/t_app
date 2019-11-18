@@ -43,8 +43,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   String userId = "";
   AuthStatus authStatus = AuthStatus.NOT_LOGGED_IN;
 
-  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-
   @override
   void initState() {
     super.initState();
