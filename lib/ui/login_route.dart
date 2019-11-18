@@ -51,7 +51,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       String userId = "";
       try {
         if (_isLoginForm) {
-          userId = await widget.auth.signIn(_email, _password);
+          widget.auth.signIn(_email, _password);
           print('Signed in: $userId');
         } else {
           userId = await widget.auth.signUp(_email, _password, _username, _birthDate, _gender);

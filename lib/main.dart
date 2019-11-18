@@ -4,8 +4,7 @@ import 'package:t_app/service/authentication.dart';
 import 'package:t_app/ui/login_route.dart';
 import 'package:t_app/ui/main_route.dart';
 
-
-//codigo basado en https://github.com/tattwei46/flutter_login_demo/blob/master/lib/pages/root_page.dart
+//code based on https://github.com/tattwei46/flutter_login_demo/blob/master/lib/pages/root_page.dart
 
 void main() => {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -42,6 +41,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   Auth auth = new Auth();
 
   String userId = "";
+  AuthStatus authStatus = AuthStatus.NOT_LOGGED_IN;
 
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
 
