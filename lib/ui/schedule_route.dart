@@ -21,7 +21,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
 
   DateTime calendarEndDate = DateUtils.getLastDayOfCurrentMonth();
 
-  List selectedDates = [];
+  List<DateTime> selectedDates = [];
 
   TimeOfDay selectedTime = TimeOfDay.now();
 
@@ -106,16 +106,16 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
     });
 
     for (int i = 0; i < selectedDates.length; i++) {
-      CollectionReference docRef = Firestore.instance.collection('trips');
+      CollectionReference docRef = Firestore.instance.collection('future_trips');
       docRef.add(<String, dynamic>{
-        'date': selectedDates[i],
-        'arrival_time': selectedTime.format(context),
+        'arrival_datetime': selectedDates[i].add(new Duration(hours: selectedTime.hour, minutes: selectedTime.minute)),
         'origin_lat': originLat,
         'origin_lon': originLon,
         'dest_lat': destLat,
         'dest_lon': destLon,
         'origin_name': originName,
         'dest_name': destName,
+        'cancelled': false
       });
     }
 

@@ -40,12 +40,6 @@ class _DrawerRouteState extends State<DrawerRoute> {
               child: Column(
                 children: <Widget>[
                   UserAccountsDrawerHeader(
-//                    onDetailsPressed: () {
-//                      Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                              builder: (context) => UserProfileRoute()));
-//                    },
                     margin: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                         color: Theme.of(context).primaryColorDark),
