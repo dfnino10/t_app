@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
-//code based on https://medium.com/flutterpub/flutter-how-to-do-user-login-with-firebase-a6af760b14d5
-
 abstract class BaseAuth {
   Future<void> signIn(String email, String password);
 
