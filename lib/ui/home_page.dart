@@ -12,27 +12,27 @@ import 'package:t_app/service/authentication.dart';
 import 'package:t_app/ui/custom_bottom_sheet.dart';
 import 'package:t_app/ui/drawer_route.dart';
 import 'package:t_app/ui/login_route.dart';
-import 'package:t_app/ui/main_route.dart';
+import 'package:t_app/ui/home_page.dart';
 import 'package:t_app/ui/schedule_route.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:t_app/ui/connectivity_check.dart';
 
-class MainRoute extends StatefulWidget {
+class HomePage extends StatefulWidget {
 
-  MainRoute({this.userId, this.auth, this.logoutCallback});
-
-  final String userId;
   final BaseAuth auth;
   final VoidCallback logoutCallback;
+  final String userId;
+
+  const HomePage({Key key, this.auth, this.logoutCallback, this.userId}) : super(key: key);
 
   @override
-  _MainRouteState createState() => _MainRouteState();
+  _HomePageState createState() => _HomePageState();
 }
 
 const apiK = 'AIzaSyDdDcFKetlYs88Ij8hlGIwNsuUDVvs1fsw';
 
 
-class _MainRouteState extends State<MainRoute> {
+class _HomePageState extends State<HomePage> {
 
   GoogleMapController mapController;
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: apiK);
@@ -48,7 +48,7 @@ class _MainRouteState extends State<MainRoute> {
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
-  _MainRouteState() {
+  _HomePageState() {
     getUserInfo();
   }
 

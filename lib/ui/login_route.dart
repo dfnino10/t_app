@@ -1,19 +1,14 @@
-import 'package:calendarro/date_utils.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:t_app/service/ConnectivityService.dart';
 import 'package:t_app/service/authentication.dart';
 import 'package:t_app/ui/custom_dropdown.dart';
 
 //Code adapted from https://github.com/tattwei46/flutter_login_demo/blob/master/lib/pages/login_signup_page.dart
-
 class LoginSignupPage extends StatefulWidget {
   LoginSignupPage({this.auth, this.loginCallback});
 
   final BaseAuth auth;
   final VoidCallback loginCallback;
-
-  final ConnectivityService conn = ConnectivityService();
 
   @override
   State<StatefulWidget> createState() => new _LoginSignupPageState();
@@ -22,6 +17,7 @@ class LoginSignupPage extends StatefulWidget {
 class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
 
+  String _errorMessage;
   String _email;
   String _password;
   String _username;
@@ -44,30 +40,35 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   // Perform login or signup
   void validateAndSubmit() async {
+    setState(() {
+      _errorMessage = "";
+      _isLoading = true;
+    });
     if (validateAndSave()) {
-      setState(() {
-        _isLoading = true;
-      });
       String userId = "";
       try {
         if (_isLoginForm) {
           userId = await widget.auth.signIn(_email, _password);
           print('Signed in: $userId');
         } else {
-          userId = await widget.auth.signUp(_email, _password);
+          userId = await widget.auth.signUp(_email, _password, _username, _birthDate, _gender);
+          //widget.auth.sendEmailVerification();
+          //_showVerifyEmailSentDialog();
           print('Signed up user: $userId');
         }
         setState(() {
           _isLoading = false;
         });
 
-        if (userId.length > 0 && userId != null && _isLoginForm) {
+        if (userId != null && userId.length > 0 && _isLoginForm) {
+          print(userId);
           widget.loginCallback();
         }
       } catch (e) {
         print('Error: $e');
         setState(() {
           _isLoading = false;
+          _errorMessage = e.message;
           _formKey.currentState.reset();
         });
       }
@@ -76,6 +77,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   @override
   void initState() {
+    _errorMessage = "";
     _isLoading = false;
     _isLoginForm = true;
     super.initState();
@@ -83,6 +85,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   void resetForm() {
     _formKey.currentState.reset();
+    _errorMessage = "";
   }
 
   void toggleFormMode() {
@@ -92,25 +95,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     });
   }
 
-  Widget _getFormWidget() {
-    if (_isLoginForm) {
-      return _showLoginForm();
-    } else {
-      return _showSignupForm();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         body: Stack(
-      children: <Widget>[_getFormWidget(), _showCircularProgress()],
-    ));
-  }
-
-  _showSnackbar(context) {
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text("alkdfjs"),
+      children: <Widget>[
+        _showForm(),
+        _showCircularProgress(),
+      ],
     ));
   }
 
@@ -122,6 +114,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       height: 0.0,
       width: 0.0,
     );
+  }
+
+  Widget _showForm() {
+    if (_isLoginForm) {
+      return _showLoginForm();
+    } else {
+      return _showSignupForm();
+    }
   }
 
   Widget _showLoginForm() {
