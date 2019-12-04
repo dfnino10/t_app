@@ -4,124 +4,6 @@ import 'package:t_app/service/authentication.dart';
 import 'package:t_app/ui/custom_dropdown.dart';
 
 //Code adapted from https://github.com/tattwei46/flutter_login_demo/blob/master/lib/pages/login_signup_page.dart
-
-//class LoginSignupPage extends StatefulWidget {
-//  LoginSignupPage({this.auth, this.loginCallback});
-//
-//  final BaseAuth auth;
-//  final VoidCallback loginCallback;
-//
-//  final ConnectivityService conn = ConnectivityService();
-//
-//  @override
-//  State<StatefulWidget> createState() => new _LoginSignupPageState();
-//}
-//
-//class _LoginSignupPageState extends State<LoginSignupPage> {
-//  final _formKey = new GlobalKey<FormState>();
-//
-//  String _email;
-//  String _password;
-//  String _username;
-//  DateTime _birthDate;
-//  String _gender;
-//  bool _isLoginForm;
-//  bool _isLoading;
-//
-//  var dateFieldController = TextEditingController();
-//
-//  // Check if form is valid before perform login or signup
-//  bool validateAndSave() {
-//    final form = _formKey.currentState;
-//    if (form.validate()) {
-//      form.save();
-//      return true;
-//    }
-//    return false;
-//  }
-//
-//  // Perform login or signup
-//  void validateAndSubmit() async {
-//    if (validateAndSave()) {
-//      setState(() {
-//        _isLoading = true;
-//      });
-//      String userId = "";
-//      try {
-//        if (_isLoginForm) {
-//          userId = await widget.auth.signIn(_email, _password);
-//          print('Signed in: $userId');
-//        } else {
-//          userId = await widget.auth.signUp(_email, _password);
-//          print('Signed up user: $userId');
-//        }
-//        setState(() {
-//          _isLoading = false;
-//        });
-//
-//        if (userId.length > 0 && userId != null && _isLoginForm) {
-//          widget.loginCallback();
-//        }
-//      } catch (e) {
-//        print('Error: $e');
-//        setState(() {
-//          _isLoading = false;
-//          _formKey.currentState.reset();
-//        });
-//      }
-//    }
-//  }
-//
-//  @override
-//  void initState() {
-//    _isLoading = false;
-//    _isLoginForm = true;
-//    super.initState();
-//  }
-//
-//  void resetForm() {
-//    _formKey.currentState.reset();
-//  }
-//
-//  void toggleFormMode() {
-//    resetForm();
-//    setState(() {
-//      _isLoginForm = !_isLoginForm;
-//    });
-//  }
-//
-//  Widget _getFormWidget() {
-//    if (_isLoginForm) {
-//      return _showLoginForm();
-//    } else {
-//      return _showSignupForm();
-//    }
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return new Scaffold(
-//        body: Stack(
-//      children: <Widget>[_getFormWidget(), _showCircularProgress()],
-//    ));
-//  }
-//
-//  _showSnackbar(context) {
-//    Scaffold.of(context).showSnackBar(SnackBar(
-//      content: Text("alkdfjs"),
-//    ));
-//  }
-//
-//  Widget _showCircularProgress() {
-//    if (_isLoading) {
-//      return Center(child: CircularProgressIndicator());
-//    }
-//    return Container(
-//      height: 0.0,
-//      width: 0.0,
-//    );
-//  }
-
 class LoginSignupPage extends StatefulWidget {
   LoginSignupPage({this.auth, this.loginCallback});
 
@@ -166,10 +48,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       String userId = "";
       try {
         if (_isLoginForm) {
-          widget.auth.signIn(_email, _password);
+          userId = await widget.auth.signIn(_email, _password);
           print('Signed in: $userId');
         } else {
-          userId = await widget.auth.signUp(_email, _password);
+          userId = await widget.auth.signUp(_email, _password, _username, _birthDate, _gender);
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
           print('Signed up user: $userId');
@@ -178,7 +60,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           _isLoading = false;
         });
 
-        if (userId.length > 0 && userId != null && _isLoginForm) {
+        if (userId != null && userId.length > 0 && _isLoginForm) {
+          print(userId);
           widget.loginCallback();
         }
       } catch (e) {
