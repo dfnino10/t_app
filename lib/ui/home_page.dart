@@ -178,9 +178,12 @@ class _HomePageState extends State<HomePage> {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult != ConnectivityResult.none) {
       Prediction p = await PlacesAutocomplete.show(
-        context: context,
-        apiKey: apiK,
-        mode: Mode.overlay,
+          context: context,
+          apiKey: apiK,
+          mode: Mode.fullscreen,
+          components: [
+            Component(Component.country, "co")
+          ]
       );
       displayPrediction(p);
     } else {
@@ -194,7 +197,10 @@ class _HomePageState extends State<HomePage> {
       Prediction p = await PlacesAutocomplete.show(
         context: context,
         apiKey: apiK,
-        mode: Mode.overlay,
+        mode: Mode.fullscreen,
+        components: [
+          Component(Component.country, "co")
+        ]
       );
       displayPrediction2(p);
     } else {
