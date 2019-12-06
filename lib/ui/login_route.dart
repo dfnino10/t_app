@@ -19,6 +19,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   String _errorMessage;
   String _email;
+  String _phoneNumber;
   String _password;
   String _username;
   DateTime _birthDate;
@@ -51,7 +52,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           userId = await widget.auth.signIn(_email, _password);
           print('Signed in: $userId');
         } else {
-          userId = await widget.auth.signUp(_email, _password, _username, _birthDate, _gender);
+          userId = await widget.auth.signUp(_email, _phoneNumber, _password, _username, _birthDate, _gender);
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
           print('Signed up user: $userId');
@@ -150,6 +151,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             shrinkWrap: true,
             children: <Widget>[
               showEmailInput(),
+              showPhoneNumberInput(),
               showUsernameInput(),
               showBirthdateInput(),
               showGenderInput(),
@@ -195,6 +197,29 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 ? 'Ingresa un correo electrónico válido'
                 : null,
         onSaved: (value) => _email = value.trim(),
+      ),
+    );
+  }
+
+  Widget showPhoneNumberInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+      child: new TextFormField(
+        autovalidate: true,
+        maxLines: 1,
+        maxLength: 10,
+        keyboardType: TextInputType.number,
+        autofocus: false,
+        decoration: new InputDecoration(
+            labelText: 'Número de teléfono celular',
+            icon: new Icon(
+              Icons.phone,
+              color: Colors.grey,
+            )),
+        validator: (value) => !RegExp("[3][0-9]{9}\$").hasMatch(value)
+            ? 'Ingresa un número de teléfono válido'
+            : null,
+        onSaved: (value) => _phoneNumber = value.trim(),
       ),
     );
   }

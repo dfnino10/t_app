@@ -6,7 +6,7 @@ import 'package:crypto/crypto.dart';
 abstract class BaseAuth {
   Future<String> signIn(String email, String password);
 
-  Future<String> signUp(String email, String password, String username,
+  Future<String> signUp(String email, String phoneNumber, String password, String username,
       DateTime birthDate, String gender);
 
   Future<String> getCurrentUser();
@@ -38,12 +38,10 @@ class Auth implements BaseAuth {
     }
   }
 
-  Future<String> signUp(String email, String password, String username,
+  Future<String> signUp(String email, String phoneNumber, String password, String username,
       DateTime birthDate, String gender) async {
-//    AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
-//        email: email, password: password);
-//    FirebaseUser user = result.user;
-//    return user.uid;
+      String emailDigest = sha256.convert(utf8.encode(email)).toString();
+      String passwordDigest = sha256.convert(utf8.encode(password)).toString();
   }
 
   Future<String> getCurrentUser() async {
