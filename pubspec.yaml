@@ -14,7 +14,7 @@ description: A new Flutter application to car pooling with buses
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -34,6 +34,7 @@ dependencies:
   shared_preferences: ^0.5.4
   connectivity: 0.4.5+1
   crypto: 2.1.3
+  http: 0.12.0+2
 
 
 dev_dependencies:
