@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       drawer: DrawerRoute(),
       body: Stack(
         children: <Widget>[
@@ -74,7 +75,7 @@ class _HomePageState extends State<HomePage> {
             polylines: _polyLines,
           ),
           Positioned(
-            top: 30,
+            top: 80,
             right: 15,
             left: 15,
             child: Container(
@@ -109,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                     })),
           ),
           Positioned(
-            top: 90,
+            top: 140,
             right: 15,
             left: 15,
             child: Container(
@@ -158,14 +159,19 @@ class _HomePageState extends State<HomePage> {
                       });
                 },
               )),
-          ConnectivityCheck()
+          ConnectivityCheck(),
+          Positioned(
+            top: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              iconTheme: IconThemeData(color: Colors.black),),
+          ),
         ],
       ),
     );
-  }
-
-  Widget _showCircularProgress() {
-    return Center(child: CircularProgressIndicator());
   }
 
   void _onMapCreated(controller) {
@@ -244,11 +250,8 @@ class _HomePageState extends State<HomePage> {
       PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId);
 
-      var placeId = p.placeId;
       double lat = detail.result.geometry.location.lat;
       double lng = detail.result.geometry.location.lng;
-
-      var address = await Geocoder.local.findAddressesFromQuery(p.description);
 
       mapController.animateCamera(CameraUpdate.newCameraPosition(
           CameraPosition(target: LatLng(lat, lng), zoom: 15.0)));
@@ -271,18 +274,15 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<LatLng> displayPrediction2(Prediction p) async {
+  Future<Null> displayPrediction2(Prediction p) async {
     int markerId2 = 2;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (p != null) {
       PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId);
 
-      var placeId = p.placeId;
       double lat = detail.result.geometry.location.lat;
       double lng = detail.result.geometry.location.lng;
-
-      var address = await Geocoder.local.findAddressesFromQuery(p.description);
 
       mapController.animateCamera(CameraUpdate.newCameraPosition(
           CameraPosition(target: LatLng(lat, lng), zoom: 15.0)));
@@ -293,7 +293,6 @@ class _HomePageState extends State<HomePage> {
             snippet: "${detail.result.formattedAddress}"),
         position: LatLng(lat, lng),
       );
-      Future<LatLng> rturn;
       setState(() {
         markers[newMarker.markerId] = newMarker;
         placeToFind2 = detail.result.name;
