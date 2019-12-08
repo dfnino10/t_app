@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      drawer: DrawerRoute(),
+      drawer: DrawerRoute(logoutCallback: widget.logoutCallback),
       body: Stack(
         children: <Widget>[
           GoogleMap(

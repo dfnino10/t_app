@@ -52,16 +52,15 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           userId = await widget.auth.signIn(_email, _password);
           print('Signed in: $userId');
         } else {
-          userId = await widget.auth.signUp(_email, _phoneNumber, _password, _username, _birthDate, _gender);
-          //widget.auth.sendEmailVerification();
-          //_showVerifyEmailSentDialog();
+          userId = await widget.auth.signUp(
+              _email, _phoneNumber, _password, _username, _birthDate, _gender);
           print('Signed up user: $userId');
         }
         setState(() {
           _isLoading = false;
         });
 
-        if (userId != null && userId.length > 0 && _isLoginForm) {
+        if (userId != null && userId.length > 0) {
           print(userId);
           widget.loginCallback();
         }
@@ -69,10 +68,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         print('Error: $e');
         setState(() {
           _isLoading = false;
-          _errorMessage = e.message;
           _formKey.currentState.reset();
         });
       }
+    } else {
+      print("one or more fields are invalid");
+      _isLoading = false;
     }
   }
 
@@ -242,7 +243,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         validator: (value) => !RegExp("^([a-zA-Z]+[ ]*)*\$").hasMatch(value)
             ? 'Ingresa un nombre y apellido válidos'
             : null,
-        onSaved: (value) => _email = value.trim(),
+        onSaved: (value) => _username = value.trim(),
       ),
     );
   }
@@ -284,15 +285,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   Widget showGenderInput() {
     return Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-        child: MyDropDown(
-            items: ["Masculino", "Femenino", "Otro"],
-            decoration: InputDecoration(
-                labelText: "Género",
-                icon: Icon(
-                  Icons.person,
-                  color: Colors.grey,
-                ))));
+      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+      child: MyDropDown(
+        items: ["Masculino", "Femenino", "Otro"],
+        onChanged: (value) {
+          setState(() => {_gender = value});
+        },
+        decoration: InputDecoration(
+            labelText: "Género",
+            icon: Icon(
+              Icons.person,
+              color: Colors.grey,
+            )),
+      ),
+    );
   }
 
   Widget showPasswordInput() {

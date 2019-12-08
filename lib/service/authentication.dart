@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BaseAuth {
   Future<String> signIn(String email, String password);
@@ -42,6 +43,11 @@ class Auth implements BaseAuth {
       DateTime birthDate, String gender) async {
       String emailDigest = sha256.convert(utf8.encode(email)).toString();
       String passwordDigest = sha256.convert(utf8.encode(password)).toString();
+      await _firebaseAuth.collection('authentication').document(emailDigest).setData({'password':passwordDigest});
+      String emailDigest2 = sha256.convert(utf8.encode(emailDigest)).toString();
+      await _firebaseAuth.collection('passengers').document(emailDigest2).setData({'phone_number': phoneNumber, 'name': username, 'birthdate': birthDate, 'gender': gender, 'future_trips':[], 'past_trips': []});
+      user = emailDigest2;
+      return emailDigest2;
   }
 
   Future<String> getCurrentUser() async {

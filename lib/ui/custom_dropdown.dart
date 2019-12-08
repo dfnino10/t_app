@@ -8,9 +8,15 @@ class MyDropDown extends StatefulWidget {
 
   InputDecoration decoration;
 
+  ValueChanged<String> onChanged;
+
+  String value;
+
   MyDropDown({
     this.items,
     this.decoration,
+    this.onChanged,
+    this.value,
     Key key,
   }) : super(key: key);
 
@@ -20,6 +26,7 @@ class MyDropDown extends StatefulWidget {
 
 class _MyDropDownState extends State<MyDropDown> {
   String selected;
+
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
@@ -33,7 +40,10 @@ class _MyDropDownState extends State<MyDropDown> {
               ))
           .toList(),
       onChanged: (value) {
-        setState(() => selected = value);
+        setState(() => {
+          selected = value
+        });
+        widget.onChanged(value);
       },
     );
   }

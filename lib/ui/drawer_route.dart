@@ -5,7 +5,10 @@ import 'package:t_app/ui/trip_history_route.dart';
 import 'package:t_app/ui/user_profile_route.dart';
 
 class DrawerRoute extends StatefulWidget {
-  DrawerRoute();
+
+  VoidCallback logoutCallback;
+
+  DrawerRoute({this.logoutCallback});
 
   @override
   _DrawerRouteState createState() => _DrawerRouteState();
@@ -82,6 +85,14 @@ class _DrawerRouteState extends State<DrawerRoute> {
           onTap: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => TripHistoryRoute()));
+          },
+        ),
+        ListTile(
+          title: Text("Cerrar sesión"),
+          onTap: () {
+            setState(() {
+              widget.logoutCallback();
+            });
           },
         )
       ],
