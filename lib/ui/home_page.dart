@@ -325,13 +325,13 @@ class _HomePageState extends State<HomePage> {
     if (connectivityResult != ConnectivityResult.none) {
       Firestore.instance
           .collection('passengers')
-          .document('6KAlH8I2hdWGKIVcSS1s')
+          .document(widget.userId)
           .get()
           .then((DocumentSnapshot ds) {
         setState(() {
-          List data = ds.data.values.toList();
-          this.userName = data[0];
-          this.sadFaces = data[5];
+          Map data = ds.data;
+          this.userName = data['name'];
+          this.sadFaces = data['sad_faces'];
         });
         prefs.setString('user_name', this.userName);
         prefs.setInt('sad_faces', this.sadFaces);

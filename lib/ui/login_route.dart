@@ -50,20 +50,51 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       try {
         if (_isLoginForm) {
           userId = await widget.auth.signIn(_email, _password);
-          print('Signed in: $userId');
+          if (userId != null && userId.length > 0) {
+            widget.loginCallback();
+            print('Signed in: $userId');
+          } else {
+            await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: Text("Usuario o contraseña incorrectos"),
+                    children: <Widget>[
+                      SimpleDialogOption(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("Aceptar"))
+                    ],
+                  );
+                });
+          }
         } else {
           userId = await widget.auth.signUp(
               _email, _phoneNumber, _password, _username, _birthDate, _gender);
-          print('Signed up user: $userId');
+          if (userId != null && userId.length > 0) {
+            widget.loginCallback();
+            print('Signed up user: $userId');
+          } else {
+            await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: Text("El correo electrónico ingresado ya está en uso"),
+                    children: <Widget>[
+                      SimpleDialogOption(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("Aceptar"))
+                    ],
+                  );
+                });
+          }
         }
         setState(() {
           _isLoading = false;
         });
-
-        if (userId != null && userId.length > 0) {
-          print(userId);
-          widget.loginCallback();
-        }
       } catch (e) {
         print('Error: $e');
         setState(() {

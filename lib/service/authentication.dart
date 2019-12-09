@@ -29,8 +29,9 @@ class Auth implements BaseAuth {
     if (data != null) {
       String pwDigest = sha256.convert(utf8.encode(password)).toString();
       if (pwDigest == data['password']) {
-        user = email;
-        return email;
+        String emailDigest2 = sha256.convert(utf8.encode(emailDigest)).toString();
+        user = emailDigest2;
+        return emailDigest2;
       } else {
         return "";
       }
@@ -42,12 +43,32 @@ class Auth implements BaseAuth {
   Future<String> signUp(String email, String phoneNumber, String password, String username,
       DateTime birthDate, String gender) async {
       String emailDigest = sha256.convert(utf8.encode(email)).toString();
-      String passwordDigest = sha256.convert(utf8.encode(password)).toString();
-      await _firebaseAuth.collection('authentication').document(emailDigest).setData({'password':passwordDigest});
-      String emailDigest2 = sha256.convert(utf8.encode(emailDigest)).toString();
-      await _firebaseAuth.collection('passengers').document(emailDigest2).setData({'phone_number': phoneNumber, 'name': username, 'birthdate': birthDate, 'gender': gender, 'future_trips':[], 'past_trips': []});
-      user = emailDigest2;
-      return emailDigest2;
+      DocumentSnapshot doc = await _firebaseAuth.collection('authentication').document(emailDigest).get();
+      if(!doc.exists) {
+        String passwordDigest = sha256.convert(utf8.encode(password))
+            .toString();
+        await _firebaseAuth.collection('authentication')
+            .document(emailDigest)
+            .setData({'password': passwordDigest});
+        String emailDigest2 = sha256.convert(utf8.encode(emailDigest))
+            .toString();
+        await _firebaseAuth.collection('passengers')
+            .document(emailDigest2)
+            .setData({
+          'phone_number': phoneNumber,
+          'name': username,
+          'birthdate': birthDate,
+          'gender': gender,
+          'future_trips': [],
+          'past_trips': [],
+          'sad_faces': 0
+        });
+        user = emailDigest2;
+        return emailDigest2;
+      }
+      else {
+        return "";
+      }
   }
 
   Future<String> getCurrentUser() async {
