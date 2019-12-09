@@ -12,6 +12,10 @@ import 'package:t_app/ui/customDayTileBuilder.dart';
 import 'package:t_app/ui/custom_bottom_sheet.dart';
 
 class ScheduleRoute extends StatefulWidget {
+  String userId;
+
+  ScheduleRoute(this.userId);
+
   @override
   _ScheduleRouteState createState() => _ScheduleRouteState();
 }
@@ -99,25 +103,11 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
     }
   }
 
-  onPressNext(BuildContext context) {
+  onPressNext(BuildContext context) async {
 
     setState(() {
       showButtons = false;
     });
-
-    for (int i = 0; i < selectedDates.length; i++) {
-      CollectionReference docRef = Firestore.instance.collection('future_trips');
-      docRef.add(<String, dynamic>{
-        'arrival_datetime': selectedDates[i].add(new Duration(hours: selectedTime.hour, minutes: selectedTime.minute)),
-        'origin_lat': originLat,
-        'origin_lon': originLon,
-        'dest_lat': destLat,
-        'dest_lon': destLon,
-        'origin_name': originName,
-        'dest_name': destName,
-        'cancelled': false
-      });
-    }
 
     String snackbarText = conn.getConnectivityStatus() != ConnectivityResult.none ? "Viajes programados" : "No tienes conexión, tus viajes se programarán automáticamente cuando la recuperes";
 
@@ -135,6 +125,37 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
         },
       ),
     ));
+
+    List<Map<String, dynamic>> newTrips = new List();
+
+    for (int i = 0; i < selectedDates.length; i++) {
+      newTrips.add(<String, dynamic>{
+        'arrival_datetime': selectedDates[i].add(new Duration(hours: selectedTime.hour, minutes: selectedTime.minute)),
+        'origin_lat': originLat,
+        'origin_lon': originLon,
+        'dest_lat': destLat,
+        'dest_lon': destLon,
+        'origin_name': originName,
+        'dest_name': destName,
+        'cancelled': false
+      });
+    }
+
+    CollectionReference collection = await Firestore.instance.collection('future_trips');
+    List<DocumentReference> trips = [];
+    for(int i = 0; i < newTrips.length; i ++) {
+      DocumentReference docRef = await collection.add(newTrips[i]);
+      trips.add(docRef);
+    }
+
+    DocumentSnapshot doc = await Firestore.instance.collection('passengers').document(widget.userId).get();
+    if(doc != null) {
+      List future_trips = doc['future_trips'];
+      for(int i = 0; i < future_trips.length; i++) {
+        trips.add(future_trips[i]);
+      }
+      await Firestore.instance.collection('passengers').document(widget.userId).updateData({'future_trips': trips});
+    }
   }
 
   onPressBack() {

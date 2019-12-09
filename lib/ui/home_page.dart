@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                   showModalBottomSheetCustom(
                       context: context,
                       builder: (BuildContext bc) {
-                        return ScheduleRoute();
+                        return ScheduleRoute(widget.userId);
                       });
                 },
               )),
