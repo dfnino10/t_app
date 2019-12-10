@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                   showModalBottomSheetCustom(
                       context: context,
                       builder: (BuildContext bc) {
-                        return ScheduleRoute(widget.userId);
+                        return BluetoothApp();
                       });
                 },
               )),
@@ -179,13 +179,6 @@ class _HomePageState extends State<HomePage> {
               elevation: 0.0,
               iconTheme: IconThemeData(color: Colors.black),
             ),
-          ),
-          Positioned(
-            top:300,
-            left: 50.0,
-            right: 50.0,
-            bottom: 100,
-            child: BluetoothApp(),
           ),
         ],
       ),
