@@ -1,11 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:t_app/ui/future_trips_route.dart';
 import 'package:t_app/ui/trip_history_route.dart';
 import 'package:t_app/ui/user_profile_route.dart';
 
 class DrawerRoute extends StatefulWidget {
-  DrawerRoute();
+
+  VoidCallback logoutCallback;
+
+  String userId;
+
+  DrawerRoute({this.logoutCallback, this.userId});
 
   @override
   _DrawerRouteState createState() => _DrawerRouteState();
@@ -74,14 +80,23 @@ class _DrawerRouteState extends State<DrawerRoute> {
         ListTile(
           title: Text("Viajes futuros"),
           onTap: () {
-            //TODO open future trips route here
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => FutureTripsRoute(widget.userId)));
           },
         ),
         ListTile(
           title: Text("Historial de viajes"),
           onTap: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => TripHistoryRoute()));
+                MaterialPageRoute(builder: (context) => TripHistoryRoute(widget.userId)));
+          },
+        ),
+        ListTile(
+          title: Text("Cerrar sesión"),
+          onTap: () {
+            setState(() {
+              widget.logoutCallback();
+            });
           },
         )
       ],

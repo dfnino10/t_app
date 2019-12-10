@@ -19,6 +19,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   String _errorMessage;
   String _email;
+  String _phoneNumber;
   String _password;
   String _username;
   DateTime _birthDate;
@@ -49,29 +50,61 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       try {
         if (_isLoginForm) {
           userId = await widget.auth.signIn(_email, _password);
-          print('Signed in: $userId');
+          if (userId != null && userId.length > 0) {
+            widget.loginCallback();
+            print('Signed in: $userId');
+          } else {
+            await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: Text("Usuario o contraseña incorrectos"),
+                    children: <Widget>[
+                      SimpleDialogOption(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("Aceptar"))
+                    ],
+                  );
+                });
+          }
         } else {
-          userId = await widget.auth.signUp(_email, _password, _username, _birthDate, _gender);
-          //widget.auth.sendEmailVerification();
-          //_showVerifyEmailSentDialog();
-          print('Signed up user: $userId');
+          userId = await widget.auth.signUp(
+              _email, _phoneNumber, _password, _username, _birthDate, _gender);
+          if (userId != null && userId.length > 0) {
+            widget.loginCallback();
+            print('Signed up user: $userId');
+          } else {
+            await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: Text("El correo electrónico ingresado ya está en uso"),
+                    children: <Widget>[
+                      SimpleDialogOption(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("Aceptar"))
+                    ],
+                  );
+                });
+          }
         }
         setState(() {
           _isLoading = false;
         });
-
-        if (userId != null && userId.length > 0 && _isLoginForm) {
-          print(userId);
-          widget.loginCallback();
-        }
       } catch (e) {
         print('Error: $e');
         setState(() {
           _isLoading = false;
-          _errorMessage = e.message;
           _formKey.currentState.reset();
         });
       }
+    } else {
+      print("one or more fields are invalid");
+      _isLoading = false;
     }
   }
 
@@ -150,6 +183,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             shrinkWrap: true,
             children: <Widget>[
               showEmailInput(),
+              showPhoneNumberInput(),
               showUsernameInput(),
               showBirthdateInput(),
               showGenderInput(),
@@ -199,6 +233,29 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
+  Widget showPhoneNumberInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+      child: new TextFormField(
+        autovalidate: true,
+        maxLines: 1,
+        maxLength: 10,
+        keyboardType: TextInputType.number,
+        autofocus: false,
+        decoration: new InputDecoration(
+            labelText: 'Número de teléfono celular',
+            icon: new Icon(
+              Icons.phone,
+              color: Colors.grey,
+            )),
+        validator: (value) => !RegExp("[3][0-9]{9}\$").hasMatch(value)
+            ? 'Ingresa un número de teléfono válido'
+            : null,
+        onSaved: (value) => _phoneNumber = value.trim(),
+      ),
+    );
+  }
+
   Widget showUsernameInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
@@ -217,7 +274,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         validator: (value) => !RegExp("^([a-zA-Z]+[ ]*)*\$").hasMatch(value)
             ? 'Ingresa un nombre y apellido válidos'
             : null,
-        onSaved: (value) => _email = value.trim(),
+        onSaved: (value) => _username = value.trim(),
       ),
     );
   }
@@ -259,15 +316,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   Widget showGenderInput() {
     return Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-        child: MyDropDown(
-            items: ["Masculino", "Femenino", "Otro"],
-            decoration: InputDecoration(
-                labelText: "Género",
-                icon: Icon(
-                  Icons.person,
-                  color: Colors.grey,
-                ))));
+      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+      child: MyDropDown(
+        items: ["Masculino", "Femenino", "Otro"],
+        onChanged: (value) {
+          setState(() => {_gender = value});
+        },
+        decoration: InputDecoration(
+            labelText: "Género",
+            icon: Icon(
+              Icons.person,
+              color: Colors.grey,
+            )),
+      ),
+    );
   }
 
   Widget showPasswordInput() {
