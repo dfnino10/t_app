@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -13,8 +10,6 @@ import 'package:t_app/service/google_maps_requests.dart' as prefix0;
 import 'package:t_app/service/google_maps_requests.dart';
 import 'package:t_app/ui/custom_bottom_sheet.dart';
 import 'package:t_app/ui/drawer_route.dart';
-import 'package:t_app/ui/login_route.dart';
-import 'package:t_app/ui/home_page.dart';
 import 'package:t_app/ui/schedule_route.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:t_app/ui/connectivity_check.dart';
@@ -44,8 +39,7 @@ class _HomePageState extends State<HomePage> {
   static const LatLng _center = const LatLng(4.603112, -74.065193);
   final _myController1 = TextEditingController();
   final _myController2 = TextEditingController();
-  final Set<Polyline> _polyLines ={};
-
+  final Set<Polyline> _polyLines = {};
 
   String userName;
   int sadFaces;
@@ -61,7 +55,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      drawer: DrawerRoute(logoutCallback: widget.logoutCallback, userId: widget.userId),
+      drawer: DrawerRoute(
+          logoutCallback: widget.logoutCallback, userId: widget.userId),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -143,7 +138,6 @@ class _HomePageState extends State<HomePage> {
                         placeToFind2 = val;
                       });
                     })),
-
           ),
           Positioned(
               bottom: 20,
@@ -151,6 +145,21 @@ class _HomePageState extends State<HomePage> {
               left: 50,
               child: FloatingActionButton.extended(
                 label: Text("Programar viajes"),
+                onPressed: () {
+                  showModalBottomSheetCustom(
+                      context: context,
+                      builder: (BuildContext bc) {
+                        return ScheduleRoute(widget.userId);
+                      });
+                },
+              )),
+          Positioned(
+              top: 200,
+              right: 50,
+              left: 50,
+              child: FloatingActionButton.extended(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                label: Text("Toca para empezar el viaje"),
                 onPressed: () {
                   showModalBottomSheetCustom(
                       context: context,
@@ -167,7 +176,8 @@ class _HomePageState extends State<HomePage> {
             child: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0.0,
-              iconTheme: IconThemeData(color: Colors.black),),
+              iconTheme: IconThemeData(color: Colors.black),
+            ),
           ),
         ],
       ),
@@ -187,10 +197,7 @@ class _HomePageState extends State<HomePage> {
           context: context,
           apiKey: apiK,
           mode: Mode.fullscreen,
-          components: [
-            Component(Component.country, "co")
-          ]
-      );
+          components: [Component(Component.country, "co")]);
       displayPrediction(p);
     } else {
       ConnectivityCheck();
@@ -201,13 +208,10 @@ class _HomePageState extends State<HomePage> {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult != ConnectivityResult.none) {
       Prediction p = await PlacesAutocomplete.show(
-        context: context,
-        apiKey: apiK,
-        mode: Mode.fullscreen,
-        components: [
-          Component(Component.country, "co")
-        ]
-      );
+          context: context,
+          apiKey: apiK,
+          mode: Mode.fullscreen,
+          components: [Component(Component.country, "co")]);
       displayPrediction2(p);
     } else {
       ConnectivityCheck();
@@ -303,8 +307,9 @@ class _HomePageState extends State<HomePage> {
       prefs.setString('dest_name', detail.result.name);
       _myController2.text = placeToFind2;
 
-      print('================'+ position1.toString());
-      String route = await _googleMapsServices.getRouteCoordinates(position1, LatLng(lat, lng));
+      print('================' + position1.toString());
+      String route = await _googleMapsServices.getRouteCoordinates(
+          position1, LatLng(lat, lng));
       createRoute(route);
     }
   }
