@@ -18,6 +18,7 @@ import 'package:t_app/ui/home_page.dart';
 import 'package:t_app/ui/schedule_route.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:t_app/ui/connectivity_check.dart';
+import 'package:t_app/service/Bluetooth.dart';
 
 class HomePage extends StatefulWidget {
   final BaseAuth auth;
@@ -168,6 +169,13 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: Colors.transparent,
               elevation: 0.0,
               iconTheme: IconThemeData(color: Colors.black),),
+          ),
+          Positioned(
+            top:300,
+            left: 50.0,
+            right: 50.0,
+            bottom: 100,
+            child: BluetoothApp(),
           ),
         ],
       ),
