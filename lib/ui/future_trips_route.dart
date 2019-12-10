@@ -4,27 +4,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:t_app/service/firebase_service.dart';
 
-class TripHistoryRoute extends StatefulWidget {
-
+class FutureTripsRoute extends StatefulWidget {
   String userId;
 
-  TripHistoryRoute(this.userId);
+  FutureTripsRoute(this.userId);
 
   @override
-  _TripHistoryRouteState createState() => _TripHistoryRouteState();
+  _FutureTripsRouteState createState() => _FutureTripsRouteState();
 }
 
-class _TripHistoryRouteState extends State<TripHistoryRoute> {
+class _FutureTripsRouteState extends State<FutureTripsRoute> {
   List trips = [];
 
   @override
   void initState() {
     super.initState();
-    getHistory();
+    getTrips();
   }
 
-  getHistory() async {
-    List trips = await FirebaseService.getPastTrips(widget.userId);
+  getTrips() async {
+    List trips = await FirebaseService.getFutureTrips(widget.userId);
     setState(() {
       this.trips = trips;
     });
@@ -47,7 +46,7 @@ class _TripHistoryRouteState extends State<TripHistoryRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Historial de viajes"),
+        title: Text("Viajes futuros"),
         backgroundColor: Theme.of(context).primaryColorDark,
       ),
       body: ListView.builder(
