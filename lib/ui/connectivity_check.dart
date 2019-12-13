@@ -111,5 +111,6 @@ class MyConnectivity {
     controller.sink.add({result: isOnline});
   }
 
+
   void disposeStream() => controller.close();
 }

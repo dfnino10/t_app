@@ -103,7 +103,8 @@ class _HomePageState extends State<HomePage> {
                         iconSize: 30.0,
                       ),
                     ),
-                    onTap: findPlace,
+                    onTap:  findPlace
+                    ,
                     onChanged: (val) {
                       setState(() {
                         placeToFind1 = val;
@@ -181,26 +182,41 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  findPlace() async {
+  Future<bool> isConnected() async{
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
-      Prediction p = await PlacesAutocomplete.show(
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  findPlace() async {
+    bool connected = await isConnected();
+    if (connected){
+      Prediction  p = await PlacesAutocomplete.show(
           context: context,
           apiKey: apiK,
           mode: Mode.fullscreen,
+          language: "es",
           components: [
             Component(Component.country, "co")
           ]
       );
       displayPrediction(p);
-    } else {
-      ConnectivityCheck();
+    }
+    else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context){
+            return AlertDialog(
+              title: Text("Error"),
+              content: Text("No tienes conexión"),
+            );
+          }
+      );
     }
   }
 
   findPlace2() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
+    bool connected = await isConnected();
+    if (connected){
       Prediction p = await PlacesAutocomplete.show(
         context: context,
         apiKey: apiK,
@@ -210,8 +226,17 @@ class _HomePageState extends State<HomePage> {
         ]
       );
       displayPrediction2(p);
-    } else {
-      ConnectivityCheck();
+    }
+    else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context){
+            return AlertDialog(
+              title: Text("Error"),
+              content: Text("No tienes conexión"),
+            );
+          }
+      );
     }
   }
 
@@ -247,7 +272,8 @@ class _HomePageState extends State<HomePage> {
   Future<Null> displayPrediction(Prediction p) async {
     int markerId1 = 1;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (p != null) {
+    bool connected = await isConnected();
+    if (p != null && connected ) {
       PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId);
 
@@ -272,6 +298,10 @@ class _HomePageState extends State<HomePage> {
       prefs.setDouble('origin_lon', lng);
       prefs.setString('origin_name', detail.result.name);
       _myController1.text = placeToFind1;
+    }
+    else if (!connected){
+
+
     }
   }
 
@@ -304,7 +334,6 @@ class _HomePageState extends State<HomePage> {
       prefs.setString('dest_name', detail.result.name);
       _myController2.text = placeToFind2;
 
-      print('================'+ position1.toString());
       String route = await _googleMapsServices.getRouteCoordinates(position1, LatLng(lat, lng));
       createRoute(route);
     }
