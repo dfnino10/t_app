@@ -46,8 +46,7 @@ class _HomePageState extends State<HomePage> {
   static const LatLng _center = const LatLng(4.603112, -74.065193);
   final _myController1 = TextEditingController();
   final _myController2 = TextEditingController();
-  final Set<Polyline> _polyLines ={};
-
+  final Set<Polyline> _polyLines = {};
 
   String userName;
   int sadFaces;
@@ -65,7 +64,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      drawer: DrawerRoute(logoutCallback: widget.logoutCallback, userId: widget.userId),
+      drawer: DrawerRoute(
+          logoutCallback: widget.logoutCallback, userId: widget.userId),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -106,8 +106,7 @@ class _HomePageState extends State<HomePage> {
                         iconSize: 30.0,
                       ),
                     ),
-                    onTap:  findPlace
-                    ,
+                    onTap: findPlace,
                     onChanged: (val) {
                       setState(() {
                         placeToFind1 = val;
@@ -148,32 +147,67 @@ class _HomePageState extends State<HomePage> {
                         placeToFind2 = val;
                       });
                     })),
-
           ),
           Positioned(
               top: 200,
               right: 50,
               left: 50,
               child: FloatingActionButton.extended(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                label: Text("Toca para mostrar tu identidad."),
-                onPressed: () {
-                  showModalBottomSheetCustom(
-                      context: context,
-                      builder: (BuildContext bc) {
-                        return Center(
-                          heightFactor: 10,
-                          widthFactor: 10,
-                          child: QrImage(
-                            data: "1234567890",
-                            version: QrVersions.auto,
-                            size: 200.0,
-                          )
-                        );
-                      });
-                },
-              )),
-
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  label: Text("Toca para comprobar tu identidad."),
+                  onPressed: () {
+                    showModalBottomSheetCustom(
+                        context: context,
+                        builder: (BuildContext context) {
+                      return Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Colors.white),
+                        child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: FlatButton(
+                                  child: Text("Comprobar mediante Bluetooth"),
+                                  onPressed: () {
+                                    showModalBottomSheetCustom(
+                                        context: context,
+                                        builder: (BuildContext context){
+                                          return BluetoothApp();
+                                        }
+                                    );
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: FlatButton(
+                                  child: Text("Comprobar mediante QR"),
+                                  onPressed: () {
+                                    showModalBottomSheetCustom(
+                                        context: context,
+                                        builder: (BuildContext context){
+                                          return Center (
+                                            widthFactor: 2,
+                                            heightFactor: 2,
+                                            child: QrImage(
+                                              data: "1234567890",
+                                              version: QrVersions.auto,
+                                              size: 200.0,
+                                            ),
+                                          );
+                                        }
+                                    );
+                                  },
+                                ),
+                              ),
+                            ]),
+                      );
+                    });
+                  })),
           Positioned(
               bottom: 20,
               right: 50,
@@ -196,7 +230,8 @@ class _HomePageState extends State<HomePage> {
             child: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0.0,
-              iconTheme: IconThemeData(color: Colors.black),),
+              iconTheme: IconThemeData(color: Colors.black),
+            ),
           ),
         ],
       ),
@@ -209,61 +244,53 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<bool> isConnected() async{
+  Future<bool> isConnected() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     return connectivityResult != ConnectivityResult.none;
   }
 
   findPlace() async {
     bool connected = await isConnected();
-    if (connected){
-      Prediction  p = await PlacesAutocomplete.show(
+    if (connected) {
+      Prediction p = await PlacesAutocomplete.show(
           context: context,
           apiKey: apiK,
           mode: Mode.fullscreen,
           language: "es",
-          components: [
-            Component(Component.country, "co")
-          ]
-      );
+          components: [Component(Component.country, "co")]);
       displayPrediction(p);
-    }
-    else {
+    } else {
       showDialog(
           context: context,
-          builder: (BuildContext context){
+          builder: (BuildContext context) {
             return AlertDialog(
               title: Text("Error"),
               content: Text("No tienes conexión"),
             );
-          }
-      );
+          });
     }
   }
 
   findPlace2() async {
     bool connected = await isConnected();
-    if (connected){
+    if (connected) {
       Prediction p = await PlacesAutocomplete.show(
-        context: context,
-        apiKey: apiK,
-        mode: Mode.fullscreen,
-        components: [
-          Component(Component.country, "co")
-        ]
-      );
-      displayPrediction2(p).then((value) {dispose();});
-    }
-    else {
+          context: context,
+          apiKey: apiK,
+          mode: Mode.fullscreen,
+          components: [Component(Component.country, "co")]);
+      displayPrediction2(p).then((value) {
+        dispose();
+      });
+    } else {
       showDialog(
           context: context,
-          builder: (BuildContext context){
+          builder: (BuildContext context) {
             return AlertDialog(
               title: Text("Error"),
               content: Text("No tienes conexión"),
             );
-          }
-      );
+          });
     }
   }
 
@@ -300,7 +327,7 @@ class _HomePageState extends State<HomePage> {
     int markerId1 = 1;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool connected = await isConnected();
-    if (p != null && connected ) {
+    if (p != null && connected) {
       PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId);
 
@@ -325,11 +352,7 @@ class _HomePageState extends State<HomePage> {
       prefs.setDouble('origin_lon', lng);
       prefs.setString('origin_name', detail.result.name);
       _myController1.text = placeToFind1;
-    }
-    else if (!connected){
-
-
-    }
+    } else if (!connected) {}
   }
 
   Future<Null> displayPrediction2(Prediction p) async {
@@ -361,7 +384,8 @@ class _HomePageState extends State<HomePage> {
       prefs.setString('dest_name', detail.result.name);
       _myController2.text = placeToFind2;
 
-      String route = await _googleMapsServices.getRouteCoordinates(position1, LatLng(lat, lng));
+      String route = await _googleMapsServices.getRouteCoordinates(
+          position1, LatLng(lat, lng));
       createRoute(route);
     }
   }
