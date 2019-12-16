@@ -22,13 +22,10 @@ class CustomCalendarroDayItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isWeekend = DateUtils.isWeekend(date);
     var textColor = Colors.black;
-    var a = date.isBefore(DateUtils.toMidnight(DateTime.now()));
+    var a = date.isBefore(DateUtils.toMidnight(DateTime.now()).add(Duration(days: 1)));
     if (a) {
       textColor = Colors.grey;
-    } else if (isWeekend) {
-      textColor = Theme.of(context).accentColor;
     }
     bool isToday = DateUtils.isToday(date);
     calendarroState = Calendarro.of(context);
@@ -56,7 +53,7 @@ class CustomCalendarroDayItem extends StatelessWidget {
               child: Text(
             "${date.day}",
             textAlign: TextAlign.center,
-            style: TextStyle(color: textColor),
+            style: DateUtils.isWeekend(date) ? TextStyle(color: textColor, fontWeight: FontWeight.bold) : TextStyle(color: textColor) ,
           ))),
       onTap: handleTap,
       behavior: HitTestBehavior.translucent,
@@ -65,7 +62,12 @@ class CustomCalendarroDayItem extends StatelessWidget {
 
   void handleTap() {
     if(date.isAfter(DateUtils.toMidnight(DateTime.now()))) {
-      calendarroState.setSelectedDate(date);
+      if(calendarroState.selectedDates.length < 5) {
+        calendarroState.toggleDateSelection(date);
+      }
+      else {
+        calendarroState.selectedDates.remove(date);
+      }
     }
     if (onTap != null) {
       onTap(date);

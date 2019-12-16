@@ -183,7 +183,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                         left: 5,
                       ),
                       child: Text(
-                        "Fechas de viaje",
+                        "Elije fechas de viaje a partir de mañana (máx. 5)",
                         textAlign: TextAlign.left,
                         style: TextStyle(
                             color: Theme.of(context).accentColor, fontSize: 16),
@@ -239,7 +239,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                       setState(() {
                         if (date.isAfter(
                                 DateUtils.toMidnight(DateTime.now())) &&
-                            !selectedDates.contains(date)) {
+                            !selectedDates.contains(date)  && selectedDates.length < 5) {
                           selectedDates.add(date);
                         } else {
                           selectedDates.remove(date);
@@ -254,7 +254,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                         left: 5,
                       ),
                       child: Text(
-                        "Hora de llegada:",
+                        "Elije la hora a la que quieres llegar:",
                         textAlign: TextAlign.left,
                         style: TextStyle(
                             color: Theme.of(context).accentColor, fontSize: 16),
