@@ -14,7 +14,19 @@ import 'package:t_app/ui/custom_bottom_sheet.dart';
 class ScheduleRoute extends StatefulWidget {
   String userId;
 
-  ScheduleRoute(this.userId);
+  double originLat;
+
+  double originLon;
+
+  double destLat;
+
+  double destLon;
+
+  String originName;
+
+  String destName;
+
+  ScheduleRoute({this.userId, this.originLat, this.originLon, this.destLat, this.destLon, this.originName, this.destName});
 
   @override
   _ScheduleRouteState createState() => _ScheduleRouteState();
@@ -31,32 +43,9 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
 
   int currentMonth = DateTime.now().month - 1;
 
-  double originLat;
-
-  double originLon;
-
-  double destLat;
-
-  double destLon;
-
-  String originName;
-
-  String destName;
-
   bool showButtons = true;
 
   ConnectionStatusSingleton conn = ConnectionStatusSingleton.getInstance();
-
-  _ScheduleRouteState() {
-    SharedPreferences.getInstance().then((SharedPreferences pref) {
-      this.originLat = pref.getDouble('origin_lat');
-      this.originLon = pref.getDouble('origin_lon');
-      this.destLat = pref.getDouble('dest_lat');
-      this.destLon = pref.getDouble('dest_lon');
-      this.originName = pref.getString('origin_name');
-      this.destName = pref.getString('dest_name');
-    });
-  }
 
   String getCurrentMonthName(int month) {
     var months = [
@@ -109,7 +98,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
       showButtons = false;
     });
 
-    String snackbarText = conn.hasConnection != ConnectivityResult.none ? "Viajes programados" : "No tienes conexión, tus viajes se programarán automáticamente cuando la recuperes";
+    String snackbarText = conn.hasConnection ? "Viajes programados" : "No tienes conexión, tus viajes se programarán automáticamente cuando la recuperes";
 
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(snackbarText),
@@ -131,12 +120,12 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
     for (int i = 0; i < selectedDates.length; i++) {
       newTrips.add(<String, dynamic>{
         'arrival_datetime': selectedDates[i].add(new Duration(hours: selectedTime.hour, minutes: selectedTime.minute)),
-        'origin_lat': originLat,
-        'origin_lon': originLon,
-        'dest_lat': destLat,
-        'dest_lon': destLon,
-        'origin_name': originName,
-        'dest_name': destName,
+        'origin_lat': widget.originLat,
+        'origin_lon': widget.originLon,
+        'dest_lat': widget.destLat,
+        'dest_lon': widget.destLon,
+        'origin_name': widget.originName,
+        'dest_name': widget.destName,
         'cancelled': false
       });
     }
@@ -288,11 +277,11 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
                           if (selectedTime == null) {
                             Scaffold.of(context).showSnackBar(SnackBar(
                                 content: Text("Elige un tiempo de llegada")));
-                          } else if (originLat == null || originLon == null) {
+                          } else if (widget.originLat == null || widget.originLon == null) {
                             Scaffold.of(context).showSnackBar(SnackBar(
                                 content:
                                     Text("Elige una ubicación de salida")));
-                          } else if (destLat == null || destLon == null) {
+                          } else if (widget.destLat == null || widget.destLon == null) {
                             Scaffold.of(context).showSnackBar(SnackBar(
                                 content:
                                     Text("Elige una ubicación de destino")));
