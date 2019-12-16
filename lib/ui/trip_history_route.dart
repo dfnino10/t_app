@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:t_app/service/ConnectionStatusSingleton.dart';
 import 'package:t_app/service/firebase_service.dart';
 
 class TripHistoryRoute extends StatefulWidget {
-
   String userId;
 
   TripHistoryRoute(this.userId);
@@ -17,17 +19,69 @@ class TripHistoryRoute extends StatefulWidget {
 class _TripHistoryRouteState extends State<TripHistoryRoute> {
   List trips = [];
 
+  ConnectionStatusSingleton conn;
+
+  StreamSubscription _streamSubscription;
+
+  bool _flushBarOn;
+
+  bool _connected;
+
+  Flushbar flushbar;
+
   @override
   void initState() {
     super.initState();
-    getHistory();
+    flushbar = Flushbar(message: "Sin conexión");
+    conn = ConnectionStatusSingleton.getInstance();
+    _connected = conn.hasConnection;
+    if(_connected) {
+      getHistory();
+      _flushBarOn = false;
+    }
+    else{
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => flushbar.show(context));
+
+      _flushBarOn = true;
+    }
+    _streamSubscription = conn.connectionChange.listen(_validateConnection);
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
+  }
+
+  void _validateConnection(dynamic hasConnection) {
+    if (hasConnection == false) {
+      if (_flushBarOn == false) {
+        setState(() {
+          _connected = hasConnection;
+          _flushBarOn = true;
+          flushbar.show(context);
+        });
+      }
+    } else {
+      if (_flushBarOn == true) {
+        setState(() {
+          _connected = hasConnection;
+          _flushBarOn = false;
+          flushbar.dismiss(true);
+          getHistory();
+        });
+      }
+    }
   }
 
   getHistory() async {
-    List trips = await FirebaseService.getPastTrips(widget.userId);
-    setState(() {
-      this.trips = trips;
-    });
+    if (await conn.checkConnection()) {
+      List trips = await FirebaseService.getPastTrips(widget.userId);
+      setState(() {
+        this.trips = trips;
+      });
+    }
   }
 
   String formatDate(Timestamp timestamp) {

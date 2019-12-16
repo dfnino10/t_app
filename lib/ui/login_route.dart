@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:t_app/service/ConnectionStatusSingleton.dart';
@@ -35,6 +37,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   var dateFieldController = TextEditingController();
 
   ConnectionStatusSingleton conn;
+
+  StreamSubscription _streamSubscription;
 
   Flushbar flushbar;
 
@@ -167,17 +171,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     _flushBarOn = false;
     conn = ConnectionStatusSingleton.getInstance();
     conn.initialize();
-    conn.connectionChange.listen(_validateConnection);
-//    WidgetsBinding.instance
-//        .addPostFrameCallback((_) => validateConnection(context));
+    _streamSubscription = conn.connectionChange.listen(_validateConnection);
   }
 
-
-//  @override
-//  void dispose() {
-//    super.dispose();
-//    conn.dispose();
-//  }
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
+  }
 
   void resetForm() {
     _formKey.currentState.reset();

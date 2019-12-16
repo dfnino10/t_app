@@ -214,12 +214,32 @@ class _HomePageState extends State<HomePage> {
               left: 50,
               child: FloatingActionButton.extended(
                 label: Text("Programar viajes"),
+                backgroundColor: (position1 != null && position2 != null) ? Theme.of(context).accentColor : Colors.grey,
                 onPressed: () {
+                  if(position1 != null && position2 != null) {
                   showModalBottomSheetCustom(
                       context: context,
                       builder: (BuildContext bc) {
-                        return ScheduleRoute(widget.userId);
+                        return ScheduleRoute(userId: widget.userId, originLat: position2.latitude, originLon: position2.longitude, destLat: position1.latitude, destLon: position1.longitude, originName: placeToFind2, destName: placeToFind1);
                       });
+                  }
+                  else {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                      return SimpleDialog(
+                        title:
+                        Text("Elige un origen y destino primero"),
+                        children: <Widget>[
+                          SimpleDialogOption(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("Aceptar"))
+                        ],
+                      );
+                    });
+                  }
                 },
               )),
           ConnectivityCheck(),
@@ -343,14 +363,11 @@ class _HomePageState extends State<HomePage> {
             snippet: "${detail.result.formattedAddress}"),
         position: LatLng(lat, lng),
       );
-      position1 = newMarker.position;
       setState(() {
         markers[newMarker.markerId] = newMarker;
         placeToFind1 = detail.result.name;
+        position1 = newMarker.position;
       });
-      prefs.setDouble('origin_lat', lat);
-      prefs.setDouble('origin_lon', lng);
-      prefs.setString('origin_name', detail.result.name);
       _myController1.text = placeToFind1;
     } else if (!connected) {}
   }
@@ -377,11 +394,9 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         markers[newMarker.markerId] = newMarker;
         placeToFind2 = detail.result.name;
+        position2 = newMarker.position;
       });
 
-      prefs.setDouble('dest_lat', lat);
-      prefs.setDouble('dest_lon', lng);
-      prefs.setString('dest_name', detail.result.name);
       _myController2.text = placeToFind2;
 
       String route = await _googleMapsServices.getRouteCoordinates(
