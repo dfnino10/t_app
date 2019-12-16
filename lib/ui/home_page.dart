@@ -156,6 +156,7 @@ class _HomePageState extends State<HomePage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   label: Text("Toca para comprobar tu identidad."),
+                  heroTag: "hero",
                   onPressed: () {
                     showModalBottomSheetCustom(
                         context: context,
