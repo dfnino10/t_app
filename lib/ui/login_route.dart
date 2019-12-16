@@ -1,5 +1,6 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:t_app/service/ConnectivityService.dart';
+import 'package:t_app/service/ConnectionStatusSingleton.dart';
 import 'package:t_app/service/authentication.dart';
 import 'package:t_app/ui/custom_dropdown.dart';
 
@@ -27,7 +28,35 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   bool _isLoginForm;
   bool _isLoading;
 
+  bool _connected;
+
+  bool _flushBarOn;
+
   var dateFieldController = TextEditingController();
+
+  ConnectionStatusSingleton conn;
+
+  Flushbar flushbar;
+
+  void _validateConnection(dynamic hasConnection) {
+    if (hasConnection == false) {
+      if (_flushBarOn == false) {
+        setState(() {
+          _connected = hasConnection;
+          _flushBarOn = true;
+          flushbar.show(context);
+        });
+      }
+    } else {
+      if (_flushBarOn == true) {
+        setState(() {
+          _connected = hasConnection;
+          _flushBarOn = false;
+          flushbar.dismiss(true);
+        });
+      }
+    }
+  }
 
   // Check if form is valid before perform login or signup
   bool validateAndSave() {
@@ -45,7 +74,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       _errorMessage = "";
       _isLoading = true;
     });
-    if (validateAndSave()) {
+    if (validateAndSave() && _connected) {
       String userId = "";
       try {
         if (_isLoginForm) {
@@ -80,7 +109,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return SimpleDialog(
-                    title: Text("El correo electrónico ingresado ya está en uso"),
+                    title:
+                        Text("El correo electrónico ingresado ya está en uso"),
                     children: <Widget>[
                       SimpleDialogOption(
                           onPressed: () {
@@ -103,18 +133,51 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         });
       }
     } else {
-      print("one or more fields are invalid");
-      _isLoading = false;
+      if(_connected == false) {
+        setState(() {
+          _isLoading = false;
+        });
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return SimpleDialog(
+                title:
+                Text("No hay conexión con el servidor"),
+                children: <Widget>[
+                  SimpleDialogOption(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("Aceptar"))
+                ],
+              );
+            });
+      }
     }
   }
 
   @override
   void initState() {
+    super.initState();
     _errorMessage = "";
     _isLoading = false;
     _isLoginForm = true;
-    super.initState();
+    flushbar = Flushbar(message: "Sin conexión");
+    _connected = true;
+    _flushBarOn = false;
+    conn = ConnectionStatusSingleton.getInstance();
+    conn.initialize();
+    conn.connectionChange.listen(_validateConnection);
+//    WidgetsBinding.instance
+//        .addPostFrameCallback((_) => validateConnection(context));
   }
+
+
+//  @override
+//  void dispose() {
+//    super.dispose();
+//    conn.dispose();
+//  }
 
   void resetForm() {
     _formKey.currentState.reset();
@@ -292,7 +355,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             if (date != null) {
               setState(() {
                 _birthDate = date;
-                print(_birthDate);
                 dateFieldController.text = _birthDate.day.toString() +
                     "/" +
                     _birthDate.month.toString() +

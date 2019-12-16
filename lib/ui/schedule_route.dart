@@ -5,7 +5,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:calendarro/calendarro.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:t_app/service/ConnectivityService.dart';
+import 'package:t_app/service/ConnectionStatusSingleton.dart';
 import 'package:t_app/ui/connectivity_check.dart';
 import 'package:t_app/ui/customWeekdayLabelsView.dart';
 import 'package:t_app/ui/customDayTileBuilder.dart';
@@ -45,7 +45,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
 
   bool showButtons = true;
 
-  ConnectivityService conn = ConnectivityService();
+  ConnectionStatusSingleton conn = ConnectionStatusSingleton.getInstance();
 
   _ScheduleRouteState() {
     SharedPreferences.getInstance().then((SharedPreferences pref) {
@@ -109,7 +109,7 @@ class _ScheduleRouteState extends State<ScheduleRoute> {
       showButtons = false;
     });
 
-    String snackbarText = conn.getConnectivityStatus() != ConnectivityResult.none ? "Viajes programados" : "No tienes conexión, tus viajes se programarán automáticamente cuando la recuperes";
+    String snackbarText = conn.hasConnection != ConnectivityResult.none ? "Viajes programados" : "No tienes conexión, tus viajes se programarán automáticamente cuando la recuperes";
 
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(snackbarText),
