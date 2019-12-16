@@ -71,8 +71,8 @@ class _ConnectivityCheckState extends State<ConnectivityCheck> {
   }
   @override
   void dispose() {
-    _connectivity.disposeStream();
     super.dispose();
+//    _connectivity.disposeStream();
   }
 }
 

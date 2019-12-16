@@ -54,7 +54,9 @@ class _HomePageState extends State<HomePage> {
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
-  _HomePageState() {
+  @override
+  void initState() {
+    super.initState();
     getUserInfo();
   }
 
