@@ -61,7 +61,6 @@ class ConnectionStatusSingleton {
     if (previousConnection != hasConnection) {
       connectionChangeController.add(hasConnection);
     }
-
     return hasConnection;
   }
 }

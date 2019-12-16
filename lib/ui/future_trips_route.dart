@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:t_app/service/ConnectionStatusSingleton.dart';
 import 'package:t_app/service/firebase_service.dart';
 
 class FutureTripsRoute extends StatefulWidget {
@@ -16,17 +19,70 @@ class FutureTripsRoute extends StatefulWidget {
 class _FutureTripsRouteState extends State<FutureTripsRoute> {
   List trips = [];
 
+  ConnectionStatusSingleton conn;
+
+  StreamSubscription _streamSubscription;
+
+  bool _flushBarOn;
+
+  bool _connected;
+
+  Flushbar flushbar;
+
   @override
   void initState() {
     super.initState();
-    getTrips();
+    flushbar = Flushbar(message: "Sin conexión");
+    conn = ConnectionStatusSingleton.getInstance();
+    _connected = conn.hasConnection;
+    if(_connected) {
+      getTrips();
+      _flushBarOn = false;
+    }
+    else{
+      WidgetsBinding.instance
+        .addPostFrameCallback((_) => flushbar.show(context));
+
+      _flushBarOn = true;
+    }
+    _streamSubscription = conn.connectionChange.listen(_validateConnection);
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
+  }
+
+  void _validateConnection(dynamic hasConnection) {
+    print("asdf");
+    if (hasConnection == false) {
+      if (_flushBarOn == false && mounted) {
+        setState(() {
+          _connected = hasConnection;
+          _flushBarOn = true;
+          flushbar.show(context);
+        });
+      }
+    } else {
+      if (_flushBarOn == true && mounted) {
+        setState(() {
+          _connected = hasConnection;
+          _flushBarOn = false;
+          flushbar.dismiss(true);
+          getTrips();
+        });
+      }
+    }
   }
 
   getTrips() async {
-    List trips = await FirebaseService.getFutureTrips(widget.userId);
-    setState(() {
-      this.trips = trips;
-    });
+    if (mounted) {
+      List trips = await FirebaseService.getFutureTrips(widget.userId);
+      setState(() {
+        this.trips = trips;
+      });
+    }
   }
 
   String formatDate(Timestamp timestamp) {
