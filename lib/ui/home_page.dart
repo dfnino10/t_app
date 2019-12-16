@@ -300,9 +300,7 @@ class _HomePageState extends State<HomePage> {
           apiKey: apiK,
           mode: Mode.fullscreen,
           components: [Component(Component.country, "co")]);
-      displayPrediction2(p).then((value) {
-        dispose();
-      });
+      displayPrediction2(p);
     } else {
       showDialog(
           context: context,
