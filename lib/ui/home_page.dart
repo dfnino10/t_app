@@ -148,6 +148,22 @@ class _HomePageState extends State<HomePage> {
 
           ),
           Positioned(
+              top: 200,
+              right: 50,
+              left: 50,
+              child: FloatingActionButton.extended(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                label: Text("Toca para empezar el viaje"),
+                onPressed: () {
+                  showModalBottomSheetCustom(
+                      context: context,
+                      builder: (BuildContext bc) {
+                        return ScheduleRoute(widget.userId);
+                      });
+                },
+              )),
+
+          Positioned(
               bottom: 20,
               right: 50,
               left: 50,
@@ -225,7 +241,7 @@ class _HomePageState extends State<HomePage> {
           Component(Component.country, "co")
         ]
       );
-      displayPrediction2(p);
+      displayPrediction2(p).then((value) {dispose();});
     }
     else {
       showDialog(

@@ -86,7 +86,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  "PAIRED DEVICES",
+                  "Dispositivos emparejados",
                   style: TextStyle(fontSize: 24, color: Colors.blue),
                   textAlign: TextAlign.center,
                 ),
@@ -97,7 +97,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Device:',
+                      'Dispositivo:',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -110,7 +110,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                     RaisedButton(
                       onPressed:
                       _pressed ? null : _connected ? _disconnect : _connect,
-                      child: Text(_connected ? 'Disconnect' : 'Connect'),
+                      child: Text(_connected ? 'Desconectar' : 'Conectar'),
                     ),
                   ],
                 ),
@@ -125,7 +125,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            "DEVICE 1",
+                            "Dispositivo 1",
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.green,
@@ -135,12 +135,12 @@ class _BluetoothAppState extends State<BluetoothApp> {
                         FlatButton(
                           onPressed:
                           _connected ? _sendOnMessageToBluetooth : null,
-                          child: Text("ON"),
+                          child: Text("Encendido"),
                         ),
                         FlatButton(
                           onPressed:
                           _connected ? _sendOffMessageToBluetooth : null,
-                          child: Text("OFF"),
+                          child: Text("Apagado"),
                         ),
                       ],
                     ),
@@ -152,7 +152,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                   padding: const EdgeInsets.all(20),
                   child: Center(
                     child: Text(
-                      "NOTE: If you cannot find the device in the list, please turn on bluetooth and pair the device by going to the bluetooth settings",
+                          "Si no puedes encontrar el dispositivo en la lista, enciende el bluetooth y empareja el dispositivo yendo a los ajustes de Bluetooth",
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -171,7 +171,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
     List<DropdownMenuItem<BluetoothDevice>> items = [];
     if (_devicesList.isEmpty) {
       items.add(DropdownMenuItem(
-        child: Text('NONE'),
+        child: Text('Vacío'),
       ));
     } else {
       _devicesList.forEach((device) {
