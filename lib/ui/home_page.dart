@@ -19,6 +19,7 @@ import 'package:t_app/ui/schedule_route.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:t_app/ui/connectivity_check.dart';
 import 'package:t_app/service/Bluetooth.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class HomePage extends StatefulWidget {
   final BaseAuth auth;
@@ -155,12 +156,20 @@ class _HomePageState extends State<HomePage> {
               left: 50,
               child: FloatingActionButton.extended(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                label: Text("Toca para empezar el viaje"),
+                label: Text("Toca para mostrar tu identidad."),
                 onPressed: () {
                   showModalBottomSheetCustom(
                       context: context,
                       builder: (BuildContext bc) {
-                        return ScheduleRoute(widget.userId);
+                        return Center(
+                          heightFactor: 10,
+                          widthFactor: 10,
+                          child: QrImage(
+                            data: "1234567890",
+                            version: QrVersions.auto,
+                            size: 200.0,
+                          )
+                        );
                       });
                 },
               )),
